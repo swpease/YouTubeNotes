@@ -19,7 +19,8 @@ function timedoutthing() {
 }
 
 insertNotes()
-var loadMoreButtonArray = document.getElementsByClassName("yt-uix-button yt-uix-button-size-default yt-uix-button-default load-more-button yt-uix-load-more browse-items-load-more-button");
-var loadMoreButton = loadMoreButtonArray[0];  // add in assert statement?
-console.log("button: ", loadMoreButton);
-loadMoreButton.addEventListener("click", timedoutthing, false);
+
+// TODO... does not handle changing between grid and list views.
+var likedVideosContainer = document.getElementById("channels-browse-content-grid") || document.getElementById("browse-items-primary");  // Grid vs List view options.
+var observer = new MutationObserver(insertNotes);
+observer.observe(likedVideosContainer, { childList: true });
