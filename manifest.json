@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "YouTube Notes",
+  "version": "1.0",
+
+  "description": "Mark times of interest in your liked videos and make notes about them.",
+  "author": "Scott Pease",
+
+  "icons": {
+    "48": "icons/border-48.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.youtube.com/channel/*/videos*",
+        "*://*.youtube.com/user/*/videos*"
+      ],
+      "js": [
+        "/content_scripts/likes_page.js"
+      ]
+    }
+  ]
+
+}
