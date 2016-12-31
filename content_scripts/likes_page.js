@@ -1,18 +1,25 @@
-/*console.log("stuff happened!");
-// want to insert after <div class="yt-lockup-meta">
-// insert another div
-var data = document.createElement("div")
-*/
 
-console.log("what is this?");
+function insertNotes() {
 
-var data = document.createElement("div");
-data.textContent = "My first div!";
-data.setAttribute("class", "yt-lockup-annotations");
+  var viewsAndDates = document.getElementsByClassName("yt-lockup-meta-info");
+  console.log("insertNotes called, yielding length: ", viewsAndDates.length);
 
-var viewsAndDates = document.getElementsByClassName("yt-lockup-meta-info");
-console.log(viewsAndDates);
-for (var i = 0; i < viewsAndDates.length; i++) {
-  var priorNode = viewsAndDates[i];
-  priorNode.parentNode.insertBefore(data, priorNode);
+  for (let i = 0; i < viewsAndDates.length; i++) {
+    var data = document.createElement("p");
+    data.textContent = "My first p!";
+    data.setAttribute("class", "yt-lockup-notes");
+
+    var priorNode = viewsAndDates[i];
+    priorNode.parentNode.insertBefore(data, priorNode.nextSibling);
+  }
 }
+
+function timedoutthing() {
+  window.setTimeout(insertNotes, 5000);
+}
+
+insertNotes()
+var loadMoreButtonArray = document.getElementsByClassName("yt-uix-button yt-uix-button-size-default yt-uix-button-default load-more-button yt-uix-load-more browse-items-load-more-button");
+var loadMoreButton = loadMoreButtonArray[0];  // add in assert statement?
+console.log("button: ", loadMoreButton);
+loadMoreButton.addEventListener("click", timedoutthing, false);
