@@ -1,8 +1,15 @@
-
+// Note: cannot differentiate b/w your own and someone else's liked page. Oh well.
+// Note: was thinking of how to ONLY get stuff to display on liked videos,
+// but maybe I just want to leave it as is?
 function insertNotes() {
+  /*
+  Currently a placeholder that inserts a p at every video in the liked videos
+  section on youtube. Inserts the p after the views and dates line (i.e.
+  the last line of text for the liked video).
+  Side-effect: updates the observer for the layout (grid vs list).
+  */
 
   var viewsAndDates = document.getElementsByClassName("yt-lockup-meta-info");
-  console.log("insertNotes called, yielding length: ", viewsAndDates.length);
 
   for (let i = 0; i < viewsAndDates.length; i++) {
     var data = document.createElement("p");
@@ -13,62 +20,33 @@ function insertNotes() {
     priorNode.parentNode.insertBefore(data, priorNode.nextSibling);
   }
 
-  // update orientationObserver's target
-  likedVideosContainer = document.getElementById("channels-browse-content-grid") || document.getElementById("browse-items-primary");
-  orientationObserver.disconnect();
-  orientationObserver.observe(likedVideosContainer, { childList: true });
+  updateLayoutObserver();
 }
 
-// function timedoutthing() {
-//   window.setTimeout(insertNotes, 5000);
-// }
-
-// ITS A DIFFERENT OBJECT!!
-// function testToggleStuff() {
-//   var reloadedTVA = document.getElementsByClassName("subnav-flow-menu yt-uix-button yt-uix-button-default yt-uix-button-size-default");
-//   var reloadedTV = reloadedTVA[0];
-//   console.log("toggle view:", toggleView);
-//   console.log("reloaded toggle view:", reloadedTV);
-//   console.log("same object: ", toggleView === reloadedTV);
-// }
-
-// window.setInterval(insertNotes, 4000);  // SO, IT'S STILL THERE, JUST NEED TO CALL IT PROPERLY!
-// window.setInterval(testToggleStuff, 4000);
-
-// TODO... does not handle changing between grid and list views.
-// var toggleViewArray = document.getElementsByClassName("subnav-flow-menu yt-uix-button yt-uix-button-default yt-uix-button-size-default");
-// var toggleView = toggleViewArray[0]; //.firstChild
-// console.log("toggle item:", toggleView);  // coudl compare THIS item; put in instertNotes
-// var toggleViewObserver = new MutationObserver(insertNotes);
-// var testobserver = new MutationObserver(function(mutations) {
-//   mutations.forEach(function(mutation) {
-//     console.log(mutation.type);
-//   });
-// });
-// var config = { attributes: true, childList: true, characterData: true, characterDataOldValue: true };
-// testobserver.observe(toggleView, config);
+function updateLayoutObserver() {
+  // update layoutObserver's target
+  likedVideosContainer = document.getElementById("channels-browse-content-grid") || document.getElementById("browse-items-primary");
+  layoutObserver.disconnect();
+  layoutObserver.observe(likedVideosContainer, { childList: true });
+}
 
 function preCheck() {
+  /*
+  Callback for pageObserver.
+  If there isn't a liked videos container, disconnects the page from pageObserver.
+  If there IS, calls insertNotes.
+  */
   let likedVideosContainer = document.getElementById("channels-browse-content-grid") || document.getElementById("browse-items-primary");
-  if (likedVideosContainer == null) {
-    pageObserver.disconnect();
-    console.log("disconnected!")
-  }
-  else {
-    console.log("calling insertNotes");
-    insertNotes();
-  }
+  likedVideosContainer == null ? pageObserver.disconnect() : insertNotes();
 }
 
 var page = document.getElementById("page");
-var pageObserver = new MutationObserver(preCheck);  // seems to work, but:
-// 1. needs to reupdate grid vs list listener
+var pageObserver = new MutationObserver(preCheck);
 var pageConfig = { attributes: true, childList: true, characterData: true }
 pageObserver.observe(page, pageConfig);
-console.log("connected!");
 
 var likedVideosContainer = document.getElementById("channels-browse-content-grid") || document.getElementById("browse-items-primary");  // Grid vs List view options.
-var orientationObserver = new MutationObserver(insertNotes);
-orientationObserver.observe(likedVideosContainer, { childList: true });  // cannot reassign the first argument object...
+var layoutObserver = new MutationObserver(insertNotes);
+layoutObserver.observe(likedVideosContainer, { childList: true });
 
 insertNotes()
