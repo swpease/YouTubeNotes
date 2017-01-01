@@ -1,6 +1,8 @@
 // Note: cannot differentiate b/w your own and someone else's liked page. Oh well.
 // Note: was thinking of how to ONLY get stuff to display on liked videos,
 // but maybe I just want to leave it as is?
+
+
 function insertNotes() {
   /*
   Currently a placeholder that inserts a p at every video in the liked videos
@@ -30,7 +32,7 @@ function updateLayoutObserver() {
   layoutObserver.observe(likedVideosContainer, { childList: true });
 }
 
-function preCheck() {
+function checkVideoContainer() {
   /*
   Callback for pageObserver.
   If there isn't a liked videos container, disconnects the page from pageObserver.
@@ -41,9 +43,8 @@ function preCheck() {
 }
 
 var page = document.getElementById("page");
-var pageObserver = new MutationObserver(preCheck);
-var pageConfig = { attributes: true, childList: true, characterData: true }
-pageObserver.observe(page, pageConfig);
+var pageObserver = new MutationObserver(checkVideoContainer);
+pageObserver.observe(page, { attributes: true });  // Don't understand why "attributes" is what works.
 
 var likedVideosContainer = document.getElementById("channels-browse-content-grid") || document.getElementById("browse-items-primary");  // Grid vs List view options.
 var layoutObserver = new MutationObserver(insertNotes);
