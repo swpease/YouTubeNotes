@@ -2,7 +2,7 @@ html, body {
   width: 100px;
 }
 
-.beast {
+.beast, .finish {
   margin: 3% auto;
   padding: 4px;
   text-align: center;
@@ -11,6 +11,6 @@ html, body {
   cursor: pointer;
 }
 
-.beast:hover {
+.beast:hover, .finish:hover {
   background-color: #CFF2F2;
 }
