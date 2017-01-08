@@ -20,7 +20,7 @@ document.addEventListener("click", (e) => {
   if (e.target.classList.contains("finish")) {
     var gettingActiveTab = browser.tabs.query({active: true, currentWindow: true});
     gettingActiveTab.then((tabs) => {
-      browser.tabs.sendMessage(tabs[0].id, {tab: tabs[0]});  // can I just use {}? Do I want to pass something?
+      browser.tabs.sendMessage(tabs[0].id, {tab: tabs[0]});
     });
   }
 });
