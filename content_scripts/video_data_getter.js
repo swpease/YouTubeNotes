@@ -1,20 +1,25 @@
 /*
 Inject this upon clicking on icon.
-Pauses the video, then retrieves:
-  - current time
-  - video name
-  - url
-Sends to popup's js, then resumes video.
-  -- ACTUALLY, WANT TO PUT THIS IN A SECOND SCRIPT
+Pauses the video, then retrieves current time.
+Sends to popup's js.
+Unpauses when finished.
 */
-console.log("loaded video_data_getter")
-var ytPlayer = document.getElementById("movie_player");
-console.log(ytPlayer);
-console.log(ytPlayer.getCurrentTime());  // NEED THE YOUTUBE API OR ELSE DO THINGS MANUALLY
-ytPlayer.pauseVideo();
 
-var pauseTime = Math.floor(ytPlayer.getCurrentTime());
-var videoUrl = ytPlayer.getVideoUrl();
-var videoTitle = ytPlayer.getVideoData().title;
+var videos = document.getElementsByClassName("video-stream html5-main-video");
+var ytPlayer = videos[0];
 
-browser.runtime.sendMessage({ "pauseTime": pauseTime, "videoUrl": videoUrl, "videoTitle": videoTitle });
+function getVideoCurrentTime() {
+  ytPlayer.pause();
+  var pauseTime = Math.floor(ytPlayer.currentTime);
+
+  browser.runtime.sendMessage({ pauseTimeKey: pauseTime });
+}
+
+function resumeVideo(message) {
+  ytPlayer.play();
+}
+
+
+browser.runtime.onMessage.addListener(resumeVideo);
+
+getVideoCurrentTime();
