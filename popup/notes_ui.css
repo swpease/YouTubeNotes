@@ -1,0 +1,16 @@
+html, body {
+  width: 100px;
+}
+
+.beast, .finish {
+  margin: 3% auto;
+  padding: 4px;
+  text-align: center;
+  font-size: 1.5em;
+  background-color: #E5F2F2;
+  cursor: pointer;
+}
+
+.beast:hover, .finish:hover {
+  background-color: #CFF2F2;
+}

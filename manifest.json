@@ -10,6 +10,22 @@
     "48": "icons/border-48.png"
   },
 
+  "page_action": {
+    "browser_style": true,
+    "default_icon": "icons/chillout.png",
+    "default_title": "Make a note for this video time",
+    "default_popup": "popup/notes_ui.html"
+  },
+
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ],
+
+  "background": {
+    "scripts": ["background/page_action.js"]
+  },
+
   "content_scripts": [
     {
       "matches": [
