@@ -1,39 +1,28 @@
-function setData(message) {
-  /* Handles the video data sent from the video_data_getter content script.
-    Message is a JSON object with pauseTime.
-  */
-  var pauseTime = message.pauseTimeKey;
-  var pauseElement = document.getElementById("pauseTime");
-  pauseElement.textContent = pauseTime;
+/*
+overall flow:
+- user clicks icon, which starts this script
+- script injects video_data_getter, which yields the video time
 
-}
+*/
 
-function getTitleAndVideoId() {
-  var gettingActiveTab = browser.tabs.query({active: true, currentWindow: true});
-  gettingActiveTab.then((tabs) => {
-    var tab = tabs[0];
+// browser.runtime.onMessage.addListener(setVideoTime);
 
-    var browserTitle = tab.title;
-    var videoTitle = browserTitle.substring(0, browserTitle.length - 10);  // removes " - YouTube"
-
-    var url = tab.url;
-    var suffix = url.split("?v=")[1];
-    var videoId = suffix.split("&")[0];
-    // return the vals
-  });
-}
-
-browser.runtime.onMessage.addListener(setData);
-
+// add event listeners specific to the items (see quicknotes.js)
 document.addEventListener("click", (e) => {
-  if (e.target.classList.contains("finish")) {
+  if (e.target.classList.contains("cancel")) {
     var gettingActiveTab = browser.tabs.query({active: true, currentWindow: true});
     gettingActiveTab.then((tabs) => {
-      browser.tabs.sendMessage(tabs[0].id, {tab: tabs[0]});
+      browser.tabs.sendMessage(tabs[0].id, {action: "cancel"});
+      window.close();
+    });
+  }
+  if (e.target.classList.contains("add")) {
+    var gettingActiveTab = browser.tabs.query({active: true, currentWindow: true});
+    gettingActiveTab.then((tabs) => {
+      browser.tabs.sendMessage(tabs[0].id, {action: "add"});  // unpause
       window.close();
     });
   }
 });
 
-browser.tabs.executeScript(null, { file: "/content_scripts/video_data_getter.js" });
-browser.tabs.executeScript(null, { file: "/content_scripts/video_unpauser.js" });
+browser.tabs.executeScript(null, { file: "/content_scripts/pause_unpause.js" });
