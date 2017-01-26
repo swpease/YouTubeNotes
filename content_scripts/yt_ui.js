@@ -31,11 +31,11 @@ notesWrapper.appendChild(noteInputWrapper);
 noteInputWrapper.appendChild(noteInputDefault);
 
 function blurNote() {
-
+  notesBox.classList.remove("focus");
 }
 
 function focusNote() {
-
+  notesBox.classList.add("focus");
 }
 
 function switchToNoteInput() {
@@ -48,9 +48,11 @@ function switchToNoteInputDefault() {
   notesBox.classList.remove("focus");
   noteInputWrapper.replaceChild(noteInputDefault, noteInput);
 }
+
 noteInputDefault.addEventListener('click', switchToNoteInput);
 cancelNoteBtn.addEventListener('click', switchToNoteInputDefault);
-
+note.addEventListener('focus', focusNote);
+note.addEventListener('blur', blurNote);
 
 var commentsSection = document.getElementById('watch-discussion');
 
