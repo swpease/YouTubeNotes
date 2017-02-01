@@ -77,6 +77,7 @@ var savedNotesWrapper = makeHTML(savedNotesWrapper_raw);
 var noteRenderer = makeHTML(noteRenderer_raw);
 var noteHeader = makeHTML(noteHeader_raw);
 var noteContent = makeHTML(noteContent_raw);
+var noteFooterPopup = makeHTML(noteFooterPopup_raw);
 
 notesSection.appendChild(savedNotesWrapper);
 
@@ -84,19 +85,26 @@ function displayFooterPopup() {
   footerBtn.classList.add("yt-uix-menu-trigger-selected");
   footerBtn.classList.add("yt-uix-button-toggled");
 
+  document.addEventListener('click', hideFooterPopup);
+  footerBtn.removeEventListener('click', displayFooterPopup);
+
 }
 
 function hideFooterPopup() {
   footerBtn.classList.remove("yt-uix-menu-trigger-selected");
   footerBtn.classList.remove("yt-uix-button-toggled");
+
+  footerBtn.addEventListener('click', displayFooterPopup);
 }
 
+//Eight test instance of A note.Will need to wrap in a function.
 savedNotesWrapper.appendChild(noteRenderer);
-noteRenderer.parentElement.insertBefore(noteHeader, noteRenderer);
-noteRenderer.parentElement.insertBefore(noteContent, noteRenderer);
+var noteFooter = noteRenderer.getElementsByClassName('comment-renderer-footer')[0];
+noteFooter.parentElement.insertBefore(noteHeader, noteFooter);
+noteFooter.parentElement.insertBefore(noteContent, noteFooter);
 var footerBtn = noteRenderer.getElementsByClassName('yt-uix-button')[0];
 footerBtn.addEventListener('click', displayFooterPopup);
-// footerBtn.addEventListener('blur', hideFooterPopup);
+
 
 var commentsSection = document.getElementById('watch-discussion');
 commentsSection.parentElement.insertBefore(notesSection, commentsSection);
