@@ -65,19 +65,19 @@ note.addEventListener('keyup', toggleNoteButtonEnabled);
 // contains all the notes
 var savedNotesWrapper_raw = '<div class="comment-section-renderer-items" id="saved-notes-section-renderer-items"></div>';
 // contains a single note. Also includes footer container (two outer layers). Also includes button for Edit/Delete popup.
-var noteRenderer_raw = '<section class="comment-thread-renderer"><div class="comment-renderer"><div class="comment-renderer-content"><div class="comment-renderer-footer"><div class="comment-action-buttons-toolbar"><div class="yt-uix-menu-container comment-renderer-action-menu yt-section-hover-container"><div class="yt-uix-menu yt-uix-menu-flipped"><button class="yt-uix-button yt-uix-button-size-default yt-uix-button-action-menu yt-uix-button-empty yt-uix-button-has-icon no-icon-markup yt-uix-menu-trigger yt-uix-menu-trigger-selected yt-uix-button-toggled" type="button" role="button" aria-pressed="false" aria-haspopup="true" aria-label="Action menu."></button></div></div></div></div></div></div></section>';
+var noteRenderer_raw = '<section class="comment-thread-renderer"><div class="comment-renderer"><div class="comment-renderer-content"><div class="comment-renderer-footer"><div class="comment-action-buttons-toolbar"><div class="yt-uix-menu-container comment-renderer-action-menu yt-section-hover-container"><div class="yt-uix-menu yt-uix-menu-flipped"><button class="note-footer-button yt-uix-button yt-uix-button-size-default yt-uix-button-action-menu yt-uix-button-empty yt-uix-button-has-icon no-icon-markup yt-uix-menu-trigger yt-uix-menu-trigger-selected yt-uix-button-toggled" type="button" role="button" aria-pressed="false" aria-haspopup="true" aria-label="Action menu."></button></div></div></div></div></div></div></section>';
 // header. To add: a fn to set the currentTime = [text] and the text for the <span>. Added my own class 'note-video-time' for future use... Modded <a> to <span>
 var noteHeader_raw = '<div class="comment-renderer-header"><span class="comment-author-text note-video-time" style="cursor:pointer;">Time goes here</span></div>';
 // text content. To add: the text content. Added my own class 'note-text-content' for future use...
 var noteContent_raw = '<div class="comment-renderer-text" tabindex="0" role="article"><div class="comment-renderer-text-content note-text-content">Note goes here</div></div>';
 // footer. Contains the Edit and Delete functionality.
-var noteFooterPopup_raw = '<div class="yt-uix-menu-content yt-ui-menu-content yt-uix-kbd-nav" role="menu" aria-expanded="true" style="min-width: 18px; left: 546px; top: 1030px;"><ul tabindex="0" class="yt-uix-kbd-nav yt-uix-kbd-nav-list"><li role="menuitem"><div class="service-endpoint-action-container hid"></div><button type="button" class="yt-ui-menu-item yt-uix-menu-close-on-select  comment-renderer-edit" data-simplebox-label="Save"><span class="yt-ui-menu-item-label">Edit</span></button></li><li role="menuitem" class=""><div class="service-endpoint-action-container hid"></div><button type="button" class="yt-ui-menu-item yt-uix-menu-close-on-select  comment-renderer-action-button"><span class="yt-ui-menu-item-label">Delete</span></button></li></ul></div>';
+var noteFooterPopup_raw = '<div class="yt-uix-menu-content yt-ui-menu-content yt-uix-kbd-nav" role="menu" aria-expanded="true" style="min-width: 18px; position: absolute; right: 0; top: 20;"><ul tabindex="0" class="yt-uix-kbd-nav yt-uix-kbd-nav-list"><li role="menuitem"><div class="service-endpoint-action-container hid"></div><button type="button" class="yt-ui-menu-item yt-uix-menu-close-on-select  comment-renderer-edit" data-simplebox-label="Save"><span class="yt-ui-menu-item-label">Edit</span></button></li><li role="menuitem" class=""><div class="service-endpoint-action-container hid"></div><button type="button" class="yt-ui-menu-item yt-uix-menu-close-on-select  comment-renderer-action-button"><span class="yt-ui-menu-item-label">Delete</span></button></li></ul></div>';
 
 var savedNotesWrapper = makeHTML(savedNotesWrapper_raw);
 var noteRenderer = makeHTML(noteRenderer_raw);
 var noteHeader = makeHTML(noteHeader_raw);
 var noteContent = makeHTML(noteContent_raw);
-var noteFooterPopup = makeHTML(noteFooterPopup_raw);
+var noteFooterPopup = makeHTML(noteFooterPopup_raw)
 
 notesSection.appendChild(savedNotesWrapper);
 
@@ -88,6 +88,7 @@ function displayFooterPopup() {
   document.addEventListener('click', hideFooterPopup);
   footerBtn.removeEventListener('click', displayFooterPopup);
 
+  footerBtn.parentElement.insertBefore(noteFooterPopup, footerBtn);
 }
 
 function hideFooterPopup() {
@@ -102,7 +103,7 @@ savedNotesWrapper.appendChild(noteRenderer);
 var noteFooter = noteRenderer.getElementsByClassName('comment-renderer-footer')[0];
 noteFooter.parentElement.insertBefore(noteHeader, noteFooter);
 noteFooter.parentElement.insertBefore(noteContent, noteFooter);
-var footerBtn = noteRenderer.getElementsByClassName('yt-uix-button')[0];
+var footerBtn = noteRenderer.getElementsByClassName('note-footer-button')[0];
 footerBtn.addEventListener('click', displayFooterPopup);
 
 
