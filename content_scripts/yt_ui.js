@@ -65,7 +65,7 @@ note.addEventListener('keyup', toggleNoteButtonEnabled);
 // contains all the notes
 var savedNotesWrapper_raw = '<div class="comment-section-renderer-items" id="saved-notes-section-renderer-items"></div>';
 // contains a single note. Also includes footer container (two outer layers). Also includes button for Edit/Delete popup.
-var noteRenderer_raw = '<section class="comment-thread-renderer"><div class="comment-renderer"><div class="comment-renderer-content"><div class="comment-renderer-footer"><div class="comment-action-buttons-toolbar"><div class="yt-uix-menu-container comment-renderer-action-menu yt-section-hover-container"><div class="yt-uix-menu yt-uix-menu-flipped"><button class="note-footer-button yt-uix-button yt-uix-button-size-default yt-uix-button-action-menu yt-uix-button-empty yt-uix-button-has-icon no-icon-markup yt-uix-menu-trigger yt-uix-menu-trigger-selected yt-uix-button-toggled" type="button" role="button" aria-pressed="false" aria-haspopup="true" aria-label="Action menu."></button></div></div></div></div></div></div></section>';
+var noteRenderer_raw = '<section class="comment-thread-renderer"><div class="comment-renderer"><div class="comment-renderer-content"><div class="note-renderer-footer comment-renderer-footer"><div class="comment-action-buttons-toolbar"><button type="button" class="note-footer-edit-button">Edit</button><button type="button" class="note-footer-delete-button">Delete</button><div class="yt-uix-menu-container comment-renderer-action-menu yt-section-hover-container"><div class="yt-uix-menu yt-uix-menu-flipped"><button class="note-footer-button yt-uix-button yt-uix-button-size-default yt-uix-button-action-menu yt-uix-button-empty yt-uix-button-has-icon no-icon-markup yt-uix-menu-trigger yt-uix-menu-trigger-selected yt-uix-button-toggled" type="button" role="button" aria-pressed="false" aria-haspopup="true" aria-label="Action menu."></button></div></div></div></div></div></div></section>';
 // header. To add: a fn to set the currentTime = [text] and the text for the <span>. Added my own class 'note-video-time' for future use... Modded <a> to <span>
 var noteHeader_raw = '<div class="comment-renderer-header"><span class="comment-author-text note-video-time" style="cursor:pointer;">Time goes here</span></div>';
 // text content. To add: the text content. Added my own class 'note-text-content' for future use...
@@ -74,12 +74,11 @@ var noteContent_raw = '<div class="comment-renderer-text" tabindex="0" role="art
 var noteFooterPopup_raw = '<div class="yt-uix-menu-content yt-ui-menu-content yt-uix-kbd-nav" role="menu" aria-expanded="true" style="min-width: 18px; position: absolute; right: 0; top: 20;"><ul tabindex="0" class="yt-uix-kbd-nav yt-uix-kbd-nav-list"><li role="menuitem"><div class="service-endpoint-action-container hid"></div><button type="button" class="yt-ui-menu-item yt-uix-menu-close-on-select  comment-renderer-edit" data-simplebox-label="Save"><span class="yt-ui-menu-item-label">Edit</span></button></li><li role="menuitem" class=""><div class="service-endpoint-action-container hid"></div><button type="button" class="yt-ui-menu-item yt-uix-menu-close-on-select  comment-renderer-action-button"><span class="yt-ui-menu-item-label">Delete</span></button></li></ul></div>';
 
 var savedNotesWrapper = makeHTML(savedNotesWrapper_raw);
-var noteRenderer = makeHTML(noteRenderer_raw);
-var noteHeader = makeHTML(noteHeader_raw);
-var noteContent = makeHTML(noteContent_raw);
-var noteFooterPopup = makeHTML(noteFooterPopup_raw)
-
 notesSection.appendChild(savedNotesWrapper);
+
+function test() {
+  console.log("hello");
+}
 
 function displayFooterPopup() {
   footerBtn.classList.add("yt-uix-menu-trigger-selected");
@@ -98,14 +97,35 @@ function hideFooterPopup() {
   footerBtn.addEventListener('click', displayFooterPopup);
 }
 
-//Eight test instance of A note.Will need to wrap in a function.
-savedNotesWrapper.appendChild(noteRenderer);
-var noteFooter = noteRenderer.getElementsByClassName('comment-renderer-footer')[0];
-noteFooter.parentElement.insertBefore(noteHeader, noteFooter);
-noteFooter.parentElement.insertBefore(noteContent, noteFooter);
-var footerBtn = noteRenderer.getElementsByClassName('note-footer-button')[0];
-footerBtn.addEventListener('click', displayFooterPopup);
+function displayNote() {
+  var noteRenderer = makeHTML(noteRenderer_raw);
+  var noteHeader = makeHTML(noteHeader_raw);
+  var noteContent = makeHTML(noteContent_raw);
+  var noteFooterPopup = makeHTML(noteFooterPopup_raw)
 
+  savedNotesWrapper.appendChild(noteRenderer);
+  var noteFooter = noteRenderer.getElementsByClassName('note-renderer-footer')[0];
+  noteFooter.parentElement.insertBefore(noteHeader, noteFooter);
+  noteFooter.parentElement.insertBefore(noteContent, noteFooter);
+  // var footerBtn = noteRenderer.getElementsByClassName('note-footer-button')[0];
+  // footerBtn.addEventListener('click', displayFooterPopup);
+  var footerEditBtn = noteRenderer.querySelector('.note-footer-edit-button');
+  footerEditBtn.addEventListener('click', test);
+
+}
+
+//GettingURLHey infoVideo ID andTitle.
+function handleResponse(message) {
+  console.log(`Message from the background script:  ${message.id}`);
+}
+
+function handleError(error) {
+  console.log(`Error: ${error}`);
+}
+
+browser.runtime.onMessage.addListener(handleResponse);
+browser.runtime.sendMessage({});
+//And back transcript interaction
 
 var commentsSection = document.getElementById('watch-discussion');
 commentsSection.parentElement.insertBefore(notesSection, commentsSection);

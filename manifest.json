@@ -42,6 +42,10 @@
         "/content_scripts/likes_page.js"
       ]
     }
-  ]
+  ],
+
+  "background": {
+    "scripts": ["background/page_action.js"]
+  }
 
 }
