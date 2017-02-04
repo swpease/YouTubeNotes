@@ -40,6 +40,7 @@ function prettifyTime(time) {
   return prettyTime;
 }
 
+
 var notesSection_raw = '<div id="notes-wrapper" class="yt-card yt-card-has-padding"></div>';
 var noteInputWrapper_raw = '<div id="notes-input-wrapper" class="comment-simplebox-renderer"></div>';
 var noteInputDefault_raw = '<div class="comment-simplebox-renderer-collapsed comment-simplebox-trigger" tabindex="0" role="form" aria-haspopup="true"><div class="comment-simplebox-renderer-collapsed-content">Add a private note...</div><div class="comment-simplebox-arrow"><div class="arrow-inner"></div><div class="arrow-outer"></div></div></div>';
@@ -141,14 +142,20 @@ function hideFooterPopup() {
   footerBtn.addEventListener('click', displayFooterPopup);
 }
 
+
+function seekVideo(noteTime) {
+  document.querySelector('.html5-main-video').currentTime = noteTime;
+}
+
 function displayNote(noteTime, noteText) {
   var noteRenderer = makeHTML(noteRenderer_raw);
   var noteHeader = makeHTML(noteHeader_raw);
   var noteContent = makeHTML(noteContent_raw);
   var noteFooterPopup = makeHTML(noteFooterPopup_raw)
+  var noteTimeElement = noteHeader.querySelector('.note-video-time');
 
   noteContent.querySelector('.note-text-content').textContent = noteText;
-  noteHeader.querySelector('.note-video-time').textContent = prettifyTime(noteTime);
+  noteTimeElement.textContent = prettifyTime(noteTime);
   noteRenderer.setAttribute('data-note-time', noteTime);
 
   savedNotesWrapper.appendChild(noteRenderer);
@@ -160,6 +167,7 @@ function displayNote(noteTime, noteText) {
   var footerEditBtn = noteRenderer.querySelector('.note-footer-edit-button');
   footerEditBtn.addEventListener('click', test);
 
+  noteTimeElement.addEventListener('click', function() { document.querySelector('.html5-main-video').currentTime = noteTime; });
 }
 
 //GettingURLHey infoVideo ID andTitle.
