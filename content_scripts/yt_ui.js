@@ -142,9 +142,8 @@ function hideFooterPopup() {
   footerBtn.addEventListener('click', displayFooterPopup);
 }
 
+function deleteNote() {
 
-function seekVideo(noteTime) {
-  document.querySelector('.html5-main-video').currentTime = noteTime;
 }
 
 function displayNote(noteTime, noteText) {
@@ -152,22 +151,30 @@ function displayNote(noteTime, noteText) {
   var noteHeader = makeHTML(noteHeader_raw);
   var noteContent = makeHTML(noteContent_raw);
   var noteFooterPopup = makeHTML(noteFooterPopup_raw)
+
   var noteTimeElement = noteHeader.querySelector('.note-video-time');
+  var footerEditBtn = noteRenderer.querySelector('.note-footer-edit-button');
+  var footerDelBtn = noteRenderer.querySelector('.note-footer-delete-button');
+  var noteFooter = noteRenderer.getElementsByClassName('note-renderer-footer')[0];
+
 
   noteContent.querySelector('.note-text-content').textContent = noteText;
   noteTimeElement.textContent = prettifyTime(noteTime);
   noteRenderer.setAttribute('data-note-time', noteTime);
 
-  savedNotesWrapper.appendChild(noteRenderer);
-  var noteFooter = noteRenderer.getElementsByClassName('note-renderer-footer')[0];
   noteFooter.parentElement.insertBefore(noteHeader, noteFooter);
   noteFooter.parentElement.insertBefore(noteContent, noteFooter);
   // var footerBtn = noteRenderer.getElementsByClassName('note-footer-button')[0];
   // footerBtn.addEventListener('click', displayFooterPopup);
-  var footerEditBtn = noteRenderer.querySelector('.note-footer-edit-button');
-  footerEditBtn.addEventListener('click', test);
 
+  footerEditBtn.addEventListener('click', test);
+  footerDelBtn.addEventListener('click', function () {
+    //To do:Remove fromLocal storage
+    noteRenderer.remove();
+  });
   noteTimeElement.addEventListener('click', function() { document.querySelector('.html5-main-video').currentTime = noteTime; });
+
+  savedNotesWrapper.appendChild(noteRenderer);
 }
 
 //GettingURLHey infoVideo ID andTitle.
