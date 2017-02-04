@@ -1,5 +1,8 @@
 document.body.style.border = "5px solid green";
 
+//Global.Signed bank backgroundClick.
+var videoId;
+var videoTitle;
 
 function makeHTML(input){
   var dummy = document.createElement('div');
@@ -54,8 +57,16 @@ function switchToNoteInputDefault() {
   noteInputWrapper.replaceChild(noteInputDefault, noteInput);
 }
 
+function makeNote() {
+  var ytVideo = document.querySelector('.html5-main-video');
+  var noteTime = ytVideo.currentTime;
+  var noteText = note.textContent;
+  displayNote(noteTime, noteText);
+}
+
 noteInputDefault.addEventListener('click', switchToNoteInput);
 cancelNoteBtn.addEventListener('click', switchToNoteInputDefault);
+makeNoteBtn.addEventListener('click', makeNote);
 note.addEventListener('focus', focusNote);
 note.addEventListener('blur', blurNote);
 note.addEventListener('keyup', toggleNoteButtonEnabled);
@@ -97,11 +108,15 @@ function hideFooterPopup() {
   footerBtn.addEventListener('click', displayFooterPopup);
 }
 
-function displayNote() {
+function displayNote(noteTime, noteText) {
   var noteRenderer = makeHTML(noteRenderer_raw);
   var noteHeader = makeHTML(noteHeader_raw);
   var noteContent = makeHTML(noteContent_raw);
   var noteFooterPopup = makeHTML(noteFooterPopup_raw)
+
+  noteContent.querySelector('.note-text-content').textContent = noteText;
+  noteHeader.querySelector('.note-video-time').textContent = noteTime;
+  noteRenderer.setAttribute('data-note-time', noteTime);
 
   savedNotesWrapper.appendChild(noteRenderer);
   var noteFooter = noteRenderer.getElementsByClassName('note-renderer-footer')[0];
@@ -115,15 +130,34 @@ function displayNote() {
 }
 
 //GettingURLHey infoVideo ID andTitle.
-function handleResponse(message) {
+function populateNotes(results) {
+  if (Object.keys(results).length == 0) {
+    return;
+  }
+  // Should only have oneResult
+  var savedNotes = results[videoId]["notes"];
+  for (note of savedNotes) {
+    //note == {time (int): note (string)}
+    var noteTime = Object.keys(note)[0];
+    var noteText = note[noteTime];
+    displayNote(noteTime, noteText);
+  }
+}
+
+function initialize(message) {
   console.log(`Message from the background script:  ${message.id}`);
+  videoId = message.id;
+  videoTitle = message.title;
+
+  var gettingSavedNotes = browser.storage.local.get(videoId);
+  gettingSavedNotes.then(populateNotes, onError);
 }
 
 function handleError(error) {
   console.log(`Error: ${error}`);
 }
 
-browser.runtime.onMessage.addListener(handleResponse);
+browser.runtime.onMessage.addListener(initialize);
 browser.runtime.sendMessage({});
 //And back transcript interaction
 
