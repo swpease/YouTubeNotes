@@ -10,6 +10,36 @@ function makeHTML(input){
   return dummy.firstChild;
 }
 
+//Converts a time in seconds to a time in format (hh):(mm):(ss) or so.
+function prettifyTime(time) {
+  var vidDuration = document.querySelector('.html5-main-video').duration;
+  var vidHrs = Math.floor(vidDuration / 3600);
+  var prettyTime = "";
+
+  var hours = Math.floor(time / 3600);
+  var rem = time % 3600;
+  var mins = Math.floor(rem / 60);
+  var secs = rem % 60;
+
+  if (vidHrs > 0) {
+    prettyTime += hours + ":";
+    if (mins < 10) {
+      prettyTime += "0" + mins + ":";
+    } else {
+      prettyTime += mins + ":";
+    }
+  } else {
+    prettyTime += mins + ":";
+  }
+  if (secs < 10) {
+    prettyTime += "0" + secs;
+  } else {
+    prettyTime += secs;
+  }
+
+  return prettyTime;
+}
+
 var notesSection_raw = '<div id="notes-wrapper" class="yt-card yt-card-has-padding"></div>';
 var noteInputWrapper_raw = '<div id="notes-input-wrapper" class="comment-simplebox-renderer"></div>';
 var noteInputDefault_raw = '<div class="comment-simplebox-renderer-collapsed comment-simplebox-trigger" tabindex="0" role="form" aria-haspopup="true"><div class="comment-simplebox-renderer-collapsed-content">Add a private note...</div><div class="comment-simplebox-arrow"><div class="arrow-inner"></div><div class="arrow-outer"></div></div></div>';
@@ -53,15 +83,18 @@ function switchToNoteInput() {
 }
 
 function switchToNoteInputDefault() {
+  note.textContent = "";
   notesBox.classList.remove("focus");
   noteInputWrapper.replaceChild(noteInputDefault, noteInput);
 }
 
 function makeNote() {
   var ytVideo = document.querySelector('.html5-main-video');
-  var noteTime = ytVideo.currentTime;
+  var noteTime = Math.floor(ytVideo.currentTime);
   var noteText = note.textContent;
   displayNote(noteTime, noteText);
+  switchToNoteInputDefault();
+  //To do:Saved storage.
 }
 
 noteInputDefault.addEventListener('click', switchToNoteInput);
@@ -115,7 +148,7 @@ function displayNote(noteTime, noteText) {
   var noteFooterPopup = makeHTML(noteFooterPopup_raw)
 
   noteContent.querySelector('.note-text-content').textContent = noteText;
-  noteHeader.querySelector('.note-video-time').textContent = noteTime;
+  noteHeader.querySelector('.note-video-time').textContent = prettifyTime(noteTime);
   noteRenderer.setAttribute('data-note-time', noteTime);
 
   savedNotesWrapper.appendChild(noteRenderer);
@@ -136,7 +169,7 @@ function populateNotes(results) {
   }
   // Should only have oneResult
   var savedNotes = results[videoId]["notes"];
-  for (note of savedNotes) {
+  for (note of savedNotes) {//ActuallySaveNoteShould be an objectJust to copyD initialize
     //note == {time (int): note (string)}
     var noteTime = Object.keys(note)[0];
     var noteText = note[noteTime];
