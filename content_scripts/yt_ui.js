@@ -102,21 +102,19 @@ function makeNote() {
       result = result[0];
     }
     var objTest = Object.keys(result);
-    var x = { [videoId] : { "title" : videoTitle, "notes" : { [noteTime] : noteText }}};
-    console.log(x, x[videoId], x[videoId]["title"], x[videoId]["notes"], x[videoId]["notes"][noteTime]);
 
     if(!objTest.includes(videoId)) {
       var storingNote = browser.storage.local.set({ [videoId] : { "title" : videoTitle,
                                                                 "notes" : { [noteTime] : noteText }
                                                               }
-                                                 });
+                                                  });
       storingNote.then(() => {
         displayNote(noteTime, noteText);
         switchToNoteInputDefault();
       });
     } else {
       var currentNotes = result[videoId]["notes"];  // Object
-      console.log(currentNotes);
+      // console.log(currentNotes);
       currentNotes[[noteTime]] = noteText;
       var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
       storingNote.then(() => {
@@ -171,6 +169,11 @@ function hideFooterPopup() {
   footerBtn.addEventListener('click', displayFooterPopup);
 }
 
+// Call find display nodeSo that you know it's areDisplayIn order Vaitai
+function insertByTime(note) {
+
+}
+
 function displayNote(noteTime, noteText) {
   var noteRenderer = makeHTML(noteRenderer_raw);
   var noteHeader = makeHTML(noteHeader_raw);
@@ -203,24 +206,27 @@ function displayNote(noteTime, noteText) {
 }
 
 //GettingURLHey infoVideo ID andTitle.
-function populateNotes(results) {
-  if (Object.keys(results).length == 0) {
-    return;
-  }
-  // Should only have oneResult
-  var savedNotes = results[videoId]["notes"];
-  for (var noteTime of Object.keys(savedNotes)) {
-    var noteText = savedNotes[noteTime];
-    displayNote(noteTime, noteText);
-  }
-}
-
 function initialize(message) {
   videoId = message.id;
   videoTitle = message.title;
 
   var gettingSavedNotes = browser.storage.local.get(videoId);
-  gettingSavedNotes.then(populateNotes, onError);
+  gettingSavedNotes.then((result) => {
+    if (Array.isArray(result)) {  // If Firefox version less than 52.
+      result = result[0];
+    }
+
+    if (Object.keys(result).length == 0) {
+      return;
+    }
+
+    var savedNotes = result[videoId]["notes"];
+    for (var noteTime of Object.keys(savedNotes)) {
+      console.log(noteTime, savedNotes[noteTime]);
+      var noteText = savedNotes[noteTime];
+      displayNote(noteTime, noteText);
+    }
+  });
 }
 
 function handleError(error) {
