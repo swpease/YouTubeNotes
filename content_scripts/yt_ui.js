@@ -16,6 +16,7 @@ function prettifyTime(time) {
   var vidHrs = Math.floor(vidDuration / 3600);
   var prettyTime = "";
 
+  time = Math.floor(time);
   var hours = Math.floor(time / 3600);
   var rem = time % 3600;
   var mins = Math.floor(rem / 60);
@@ -89,13 +90,41 @@ function switchToNoteInputDefault() {
   noteInputWrapper.replaceChild(noteInputDefault, noteInput);
 }
 
+//UponClicking to add a note,Displays the note belowAnd and sit to local storage
 function makeNote() {
   var ytVideo = document.querySelector('.html5-main-video');
-  var noteTime = Math.floor(ytVideo.currentTime);
+  var noteTime = ytVideo.currentTime; //Don't forage until after storage.Could you accidentally overwriteStill,But highly unlikely
   var noteText = note.textContent;
-  displayNote(noteTime, noteText);
-  switchToNoteInputDefault();
-  //To do:Saved storage.
+
+  var gettingItem = browser.storage.local.get(videoId);
+  gettingItem.then((result) => {
+    if (Array.isArray(result)) {  // If Firefox version less than 52.
+      result = result[0];
+    }
+    var objTest = Object.keys(result);
+    var x = { [videoId] : { "title" : videoTitle, "notes" : { [noteTime] : noteText }}};
+    console.log(x, x[videoId], x[videoId]["title"], x[videoId]["notes"], x[videoId]["notes"][noteTime]);
+
+    if(!objTest.includes(videoId)) {
+      var storingNote = browser.storage.local.set({ [videoId] : { "title" : videoTitle,
+                                                                "notes" : { [noteTime] : noteText }
+                                                              }
+                                                 });
+      storingNote.then(() => {
+        displayNote(noteTime, noteText);
+        switchToNoteInputDefault();
+      });
+    } else {
+      var currentNotes = result[videoId]["notes"];  // Object
+      console.log(currentNotes);
+      currentNotes[[noteTime]] = noteText;
+      var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
+      storingNote.then(() => {
+        displayNote(noteTime, noteText);
+        switchToNoteInputDefault();
+      });
+    }
+  });
 }
 
 noteInputDefault.addEventListener('click', switchToNoteInput);
@@ -142,10 +171,6 @@ function hideFooterPopup() {
   footerBtn.addEventListener('click', displayFooterPopup);
 }
 
-function deleteNote() {
-
-}
-
 function displayNote(noteTime, noteText) {
   var noteRenderer = makeHTML(noteRenderer_raw);
   var noteHeader = makeHTML(noteHeader_raw);
@@ -184,16 +209,13 @@ function populateNotes(results) {
   }
   // Should only have oneResult
   var savedNotes = results[videoId]["notes"];
-  for (note of savedNotes) {//ActuallySaveNoteShould be an objectJust to copyD initialize
-    //note == {time (int): note (string)}
-    var noteTime = Object.keys(note)[0];
-    var noteText = note[noteTime];
+  for (var noteTime of Object.keys(savedNotes)) {
+    var noteText = savedNotes[noteTime];
     displayNote(noteTime, noteText);
   }
 }
 
 function initialize(message) {
-  console.log(`Message from the background script:  ${message.id}`);
   videoId = message.id;
   videoTitle = message.title;
 
