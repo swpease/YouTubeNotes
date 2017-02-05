@@ -137,7 +137,7 @@ note.addEventListener('keyup', toggleNoteButtonEnabled);
 // contains all the notes
 var savedNotesWrapper_raw = '<div class="comment-section-renderer-items" id="saved-notes-section-renderer-items"></div>';
 // contains a single note. Also includes footer container (two outer layers). Also includes button for Edit/Delete popup.
-var noteRenderer_raw = '<section class="comment-thread-renderer"><div class="comment-renderer"><div class="comment-renderer-content"><div class="note-renderer-footer comment-renderer-footer"><div class="comment-action-buttons-toolbar"><button type="button" class="note-footer-edit-button">Edit</button><button type="button" class="note-footer-delete-button">Delete</button><div class="yt-uix-menu-container comment-renderer-action-menu yt-section-hover-container"><div class="yt-uix-menu yt-uix-menu-flipped"><button class="note-footer-button yt-uix-button yt-uix-button-size-default yt-uix-button-action-menu yt-uix-button-empty yt-uix-button-has-icon no-icon-markup yt-uix-menu-trigger yt-uix-menu-trigger-selected yt-uix-button-toggled" type="button" role="button" aria-pressed="false" aria-haspopup="true" aria-label="Action menu."></button></div></div></div></div></div></div></section>';
+var noteRenderer_raw = '<section class="note-renderer comment-thread-renderer"><div class="comment-renderer"><div class="comment-renderer-content"><div class="note-renderer-footer comment-renderer-footer"><div class="comment-action-buttons-toolbar"><button type="button" class="note-footer-edit-button">Edit</button><button type="button" class="note-footer-delete-button">Delete</button><div class="yt-uix-menu-container comment-renderer-action-menu yt-section-hover-container"><div class="yt-uix-menu yt-uix-menu-flipped"><button class="note-footer-button yt-uix-button yt-uix-button-size-default yt-uix-button-action-menu yt-uix-button-empty yt-uix-button-has-icon no-icon-markup yt-uix-menu-trigger yt-uix-menu-trigger-selected yt-uix-button-toggled" type="button" role="button" aria-pressed="false" aria-haspopup="true" aria-label="Action menu."></button></div></div></div></div></div></div></section>';
 // header. To add: a fn to set the currentTime = [text] and the text for the <span>. Added my own class 'note-video-time' for future use... Modded <a> to <span>
 var noteHeader_raw = '<div class="comment-renderer-header"><span class="comment-author-text note-video-time" style="cursor:pointer;">Time goes here</span></div>';
 // text content. To add: the text content. Added my own class 'note-text-content' for future use...
@@ -171,7 +171,17 @@ function hideFooterPopup() {
 
 // Call find display nodeSo that you know it's areDisplayIn order Vaitai
 function insertByTime(note) {
+  var displayedNotes = savedNotesWrapper.getElementsByClassName('note-renderer');
 
+  if (displayedNotes.length > 0) {
+    for (var displayedNote of displayedNotes) {
+      if (note.dataset.noteTime < displayedNote.dataset.noteTime) {
+        savedNotesWrapper.insertBefore(note, displayedNote);
+        return;
+      }
+    }
+  }
+  savedNotesWrapper.appendChild(note);
 }
 
 function displayNote(noteTime, noteText) {
@@ -202,7 +212,7 @@ function displayNote(noteTime, noteText) {
   });
   noteTimeElement.addEventListener('click', function() { document.querySelector('.html5-main-video').currentTime = noteTime; });
 
-  savedNotesWrapper.appendChild(noteRenderer);
+  insertByTime(noteRenderer);
 }
 
 //GettingURLHey infoVideo ID andTitle.
