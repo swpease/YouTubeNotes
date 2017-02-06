@@ -206,9 +206,27 @@ function displayNote(noteTime, noteText) {
   // footerBtn.addEventListener('click', displayFooterPopup);
 
   footerEditBtn.addEventListener('click', test);
+  //DeleteNote
   footerDelBtn.addEventListener('click', function () {
-    //To do:Remove fromLocal storage
-    noteRenderer.remove();
+    var gettingItem = browser.storage.local.get(videoId);
+    gettingItem.then((result) => {
+      if (Array.isArray(result)) {  // If Firefox version less than 52.
+        result = result[0];
+      }
+      var objTest = Object.keys(result);
+
+      var currentNotes = result[videoId]["notes"];  // Object
+      delete currentNotes[[noteTime]];
+      if (Object.keys(currentNotes).length == 0) {
+        browser.storage.local.remove(videoId);
+        noteRenderer.remove();
+      } else {
+        var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
+        storingNote.then(() => {
+          noteRenderer.remove();
+        });
+      }
+    });
   });
   noteTimeElement.addEventListener('click', function() { document.querySelector('.html5-main-video').currentTime = noteTime; });
 
