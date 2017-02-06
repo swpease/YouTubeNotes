@@ -1,11 +1,46 @@
 document.body.style.border = "5px solid green";
 
+//Global.Signed bank backgroundClick.
+var videoId;
+var videoTitle;
 
 function makeHTML(input){
   var dummy = document.createElement('div');
   dummy.innerHTML = input;
   return dummy.firstChild;
 }
+
+//Converts a time in seconds to a time in format (hh):(mm):(ss) or so.
+function prettifyTime(time) {
+  var vidDuration = document.querySelector('.html5-main-video').duration;
+  var vidHrs = Math.floor(vidDuration / 3600);
+  var prettyTime = "";
+
+  time = Math.floor(time);
+  var hours = Math.floor(time / 3600);
+  var rem = time % 3600;
+  var mins = Math.floor(rem / 60);
+  var secs = rem % 60;
+
+  if (vidHrs > 0) {
+    prettyTime += hours + ":";
+    if (mins < 10) {
+      prettyTime += "0" + mins + ":";
+    } else {
+      prettyTime += mins + ":";
+    }
+  } else {
+    prettyTime += mins + ":";
+  }
+  if (secs < 10) {
+    prettyTime += "0" + secs;
+  } else {
+    prettyTime += secs;
+  }
+
+  return prettyTime;
+}
+
 
 var notesSection_raw = '<div id="notes-wrapper" class="yt-card yt-card-has-padding"></div>';
 var noteInputWrapper_raw = '<div id="notes-input-wrapper" class="comment-simplebox-renderer"></div>';
@@ -50,12 +85,49 @@ function switchToNoteInput() {
 }
 
 function switchToNoteInputDefault() {
+  note.textContent = "";
   notesBox.classList.remove("focus");
   noteInputWrapper.replaceChild(noteInputDefault, noteInput);
 }
 
+//UponClicking to add a note,Displays the note belowAnd and sit to local storage
+function makeNote() {
+  var ytVideo = document.querySelector('.html5-main-video');
+  var noteTime = ytVideo.currentTime; //Don't forage until after storage.Could you accidentally overwriteStill,But highly unlikely
+  var noteText = note.textContent;
+
+  var gettingItem = browser.storage.local.get(videoId);
+  gettingItem.then((result) => {
+    if (Array.isArray(result)) {  // If Firefox version less than 52.
+      result = result[0];
+    }
+    var objTest = Object.keys(result);
+
+    if(!objTest.includes(videoId)) {
+      var storingNote = browser.storage.local.set({ [videoId] : { "title" : videoTitle,
+                                                                "notes" : { [noteTime] : noteText }
+                                                              }
+                                                  });
+      storingNote.then(() => {
+        displayNote(noteTime, noteText);
+        switchToNoteInputDefault();
+      });
+    } else {
+      var currentNotes = result[videoId]["notes"];  // Object
+      // console.log(currentNotes);
+      currentNotes[[noteTime]] = noteText;
+      var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
+      storingNote.then(() => {
+        displayNote(noteTime, noteText);
+        switchToNoteInputDefault();
+      });
+    }
+  });
+}
+
 noteInputDefault.addEventListener('click', switchToNoteInput);
 cancelNoteBtn.addEventListener('click', switchToNoteInputDefault);
+makeNoteBtn.addEventListener('click', makeNote);
 note.addEventListener('focus', focusNote);
 note.addEventListener('blur', blurNote);
 note.addEventListener('keyup', toggleNoteButtonEnabled);
@@ -65,7 +137,7 @@ note.addEventListener('keyup', toggleNoteButtonEnabled);
 // contains all the notes
 var savedNotesWrapper_raw = '<div class="comment-section-renderer-items" id="saved-notes-section-renderer-items"></div>';
 // contains a single note. Also includes footer container (two outer layers). Also includes button for Edit/Delete popup.
-var noteRenderer_raw = '<section class="comment-thread-renderer"><div class="comment-renderer"><div class="comment-renderer-content"><div class="note-renderer-footer comment-renderer-footer"><div class="comment-action-buttons-toolbar"><button type="button" class="note-footer-edit-button">Edit</button><button type="button" class="note-footer-delete-button">Delete</button><div class="yt-uix-menu-container comment-renderer-action-menu yt-section-hover-container"><div class="yt-uix-menu yt-uix-menu-flipped"><button class="note-footer-button yt-uix-button yt-uix-button-size-default yt-uix-button-action-menu yt-uix-button-empty yt-uix-button-has-icon no-icon-markup yt-uix-menu-trigger yt-uix-menu-trigger-selected yt-uix-button-toggled" type="button" role="button" aria-pressed="false" aria-haspopup="true" aria-label="Action menu."></button></div></div></div></div></div></div></section>';
+var noteRenderer_raw = '<section class="note-renderer comment-thread-renderer"><div class="comment-renderer"><div class="comment-renderer-content"><div class="note-renderer-footer comment-renderer-footer"><div class="comment-action-buttons-toolbar"><button type="button" class="note-footer-edit-button">Edit</button><button type="button" class="note-footer-delete-button">Delete</button><div class="yt-uix-menu-container comment-renderer-action-menu yt-section-hover-container"><div class="yt-uix-menu yt-uix-menu-flipped"><button class="note-footer-button yt-uix-button yt-uix-button-size-default yt-uix-button-action-menu yt-uix-button-empty yt-uix-button-has-icon no-icon-markup yt-uix-menu-trigger yt-uix-menu-trigger-selected yt-uix-button-toggled" type="button" role="button" aria-pressed="false" aria-haspopup="true" aria-label="Action menu."></button></div></div></div></div></div></div></section>';
 // header. To add: a fn to set the currentTime = [text] and the text for the <span>. Added my own class 'note-video-time' for future use... Modded <a> to <span>
 var noteHeader_raw = '<div class="comment-renderer-header"><span class="comment-author-text note-video-time" style="cursor:pointer;">Time goes here</span></div>';
 // text content. To add: the text content. Added my own class 'note-text-content' for future use...
@@ -97,33 +169,99 @@ function hideFooterPopup() {
   footerBtn.addEventListener('click', displayFooterPopup);
 }
 
-function displayNote() {
+// Call find display nodeSo that you know it's areDisplayIn order Vaitai
+function insertByTime(note) {
+  var displayedNotes = savedNotesWrapper.getElementsByClassName('note-renderer');
+
+  if (displayedNotes.length > 0) {
+    for (var displayedNote of displayedNotes) {
+      if (note.dataset.noteTime < displayedNote.dataset.noteTime) {
+        savedNotesWrapper.insertBefore(note, displayedNote);
+        return;
+      }
+    }
+  }
+  savedNotesWrapper.appendChild(note);
+}
+
+function displayNote(noteTime, noteText) {
   var noteRenderer = makeHTML(noteRenderer_raw);
   var noteHeader = makeHTML(noteHeader_raw);
   var noteContent = makeHTML(noteContent_raw);
   var noteFooterPopup = makeHTML(noteFooterPopup_raw)
 
-  savedNotesWrapper.appendChild(noteRenderer);
+  var noteTimeElement = noteHeader.querySelector('.note-video-time');
+  var footerEditBtn = noteRenderer.querySelector('.note-footer-edit-button');
+  var footerDelBtn = noteRenderer.querySelector('.note-footer-delete-button');
   var noteFooter = noteRenderer.getElementsByClassName('note-renderer-footer')[0];
+
+
+  noteContent.querySelector('.note-text-content').textContent = noteText;
+  noteTimeElement.textContent = prettifyTime(noteTime);
+  noteRenderer.setAttribute('data-note-time', noteTime);
+
   noteFooter.parentElement.insertBefore(noteHeader, noteFooter);
   noteFooter.parentElement.insertBefore(noteContent, noteFooter);
   // var footerBtn = noteRenderer.getElementsByClassName('note-footer-button')[0];
   // footerBtn.addEventListener('click', displayFooterPopup);
-  var footerEditBtn = noteRenderer.querySelector('.note-footer-edit-button');
-  footerEditBtn.addEventListener('click', test);
 
+  footerEditBtn.addEventListener('click', test);
+  //DeleteNote
+  footerDelBtn.addEventListener('click', function () {
+    var gettingItem = browser.storage.local.get(videoId);
+    gettingItem.then((result) => {
+      if (Array.isArray(result)) {  // If Firefox version less than 52.
+        result = result[0];
+      }
+      var objTest = Object.keys(result);
+
+      var currentNotes = result[videoId]["notes"];  // Object
+      delete currentNotes[[noteTime]];
+      if (Object.keys(currentNotes).length == 0) {
+        browser.storage.local.remove(videoId);
+        noteRenderer.remove();
+      } else {
+        var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
+        storingNote.then(() => {
+          noteRenderer.remove();
+        });
+      }
+    });
+  });
+  noteTimeElement.addEventListener('click', function() { document.querySelector('.html5-main-video').currentTime = noteTime; });
+
+  insertByTime(noteRenderer);
 }
 
 //GettingURLHey infoVideo ID andTitle.
-function handleResponse(message) {
-  console.log(`Message from the background script:  ${message.id}`);
+function initialize(message) {
+  videoId = message.id;
+  videoTitle = message.title;
+
+  var gettingSavedNotes = browser.storage.local.get(videoId);
+  gettingSavedNotes.then((result) => {
+    if (Array.isArray(result)) {  // If Firefox version less than 52.
+      result = result[0];
+    }
+
+    if (Object.keys(result).length == 0) {
+      return;
+    }
+
+    var savedNotes = result[videoId]["notes"];
+    for (var noteTime of Object.keys(savedNotes)) {
+      console.log(noteTime, savedNotes[noteTime]);
+      var noteText = savedNotes[noteTime];
+      displayNote(noteTime, noteText);
+    }
+  });
 }
 
 function handleError(error) {
   console.log(`Error: ${error}`);
 }
 
-browser.runtime.onMessage.addListener(handleResponse);
+browser.runtime.onMessage.addListener(initialize);
 browser.runtime.sendMessage({});
 //And back transcript interaction
 
