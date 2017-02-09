@@ -181,7 +181,7 @@ function insertByTime(note) {
 
   if (displayedNotes.length > 0) {
     for (var displayedNote of displayedNotes) {
-      if (note.dataset.noteTime < displayedNote.dataset.noteTime) {
+      if (Number(note.dataset.noteTime) < Number(displayedNote.dataset.noteTime)) {
         savedNotesWrapper.insertBefore(note, displayedNote);
         return;
       }
@@ -231,6 +231,8 @@ function displayNote(noteTime, noteText) {
   // footerBtn.addEventListener('click', displayFooterPopup);
 
   footerEditBtn.addEventListener('click', function () {
+    var noteKeyTime = noteRenderer.dataset.noteTime;  // For lookup by makeEditBtn click
+
     var noteEdit = makeHTML(noteEdit_raw);
     noteEdit.querySelector('.note-simplebox-text').textContent = noteText;
 
@@ -246,11 +248,27 @@ function displayNote(noteTime, noteText) {
     edit.addEventListener('focus', function () { focusNote(editBox) });
     edit.addEventListener('blur', function () { blurNote(editBox) });
     edit.addEventListener('keyup', function () { toggleNoteButtonEnabled(edit, makeEditBtn, noteText) });
+    makeEditBtn.addEventListener('click', function () {
+      var editedText = noteEdit.querySelector('.note-simplebox-text').textContent;
 
+      var gettingItem = browser.storage.local.get(videoId);
+      gettingItem.then((result) => {
+        if (Array.isArray(result)) {  // If Firefox version less than 52.
+          result = result[0];
+        }
 
+        var currentNotes = result[videoId]["notes"];  // Object
+        currentNotes[[noteKeyTime]] = editedText;
+        var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
+        storingNote.then(() => {
+          noteContent.querySelector('.note-text-content').textContent = editedText;
+          noteEdit.parentElement.replaceChild(noteRenderer, noteEdit);
+          noteEdit.remove();
+        });
+      });
+    })
     noteRenderer.parentElement.replaceChild(noteEdit, noteRenderer);
     placeCaretAtEnd(edit);
-
   });
 
   //DeleteNote
@@ -297,7 +315,7 @@ function initialize(message) {
 
     var savedNotes = result[videoId]["notes"];
     for (var noteTime of Object.keys(savedNotes)) {
-      console.log(noteTime, savedNotes[noteTime]);
+      // console.log(noteTime, savedNotes[noteTime]);
       var noteText = savedNotes[noteTime];
       displayNote(noteTime, noteText);
     }
