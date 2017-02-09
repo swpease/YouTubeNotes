@@ -147,7 +147,7 @@ var noteFooterPopup_raw = '<div class="yt-uix-menu-content yt-ui-menu-content yt
 
 // For the editing notes.Note to that YouTubeAs a single element that day Switcheroo and as needed.Not sure if faster.
 var noteEdit_raw = '<div class="comment-simplebox-edit comment-simplebox-content">' +
-                   '<div class="comment-simplebox"><div class="comment-simplebox-arrow"><div class="arrow-inner"></div><div class="arrow-outer"></div></div>' +
+                   '<div class="comment-simplebox focus"><div class="comment-simplebox-arrow"><div class="arrow-inner"></div><div class="arrow-outer"></div></div>' +
                    '<div class="comment-simplebox-frame"><div class="comment-simplebox-prompt"></div><div class="note-simplebox-text comment-simplebox-text" role="textbox" aria-multiline="true" contenteditable="true"></div></div>' +
                    '<div class="comment-simplebox-controls"><div class="comment-simplebox-buttons">' +
                    '<button class="cancel-note-button yt-uix-button yt-uix-button-size-default yt-uix-button-default comment-simplebox-cancel" type="button" onclick=";return false;"><span class="yt-uix-button-content">Cancel</span>' +
@@ -190,6 +190,25 @@ function insertByTime(note) {
   savedNotesWrapper.appendChild(note);
 }
 
+//source: http://stackoverflow.com/questions/4233265/contenteditable-set-caret-at-the-end-of-the-text-cross-browser
+function placeCaretAtEnd(el) {
+    el.focus();
+    if (typeof window.getSelection != "undefined"
+            && typeof document.createRange != "undefined") {
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else if (typeof document.body.createTextRange != "undefined") {
+        var textRange = document.body.createTextRange();
+        textRange.moveToElementText(el);
+        textRange.collapse(false);
+        textRange.select();
+    }
+}
+
 function displayNote(noteTime, noteText) {
   var noteRenderer = makeHTML(noteRenderer_raw);
   var noteHeader = makeHTML(noteHeader_raw);
@@ -220,12 +239,18 @@ function displayNote(noteTime, noteText) {
     var cancelEditBtn = noteEdit.getElementsByClassName("cancel-note-button")[0];
     var makeEditBtn = noteEdit.getElementsByClassName("confirm-note-button")[0];
 
+    cancelEditBtn.addEventListener('click', function () {
+      noteEdit.parentElement.replaceChild(noteRenderer, noteEdit);
+      noteEdit.remove();
+    });
     edit.addEventListener('focus', function () { focusNote(editBox) });
     edit.addEventListener('blur', function () { blurNote(editBox) });
     edit.addEventListener('keyup', function () { toggleNoteButtonEnabled(edit, makeEditBtn, noteText) });
 
 
-    noteRenderer.parentElement.insertBefore(noteEdit, noteRenderer);
+    noteRenderer.parentElement.replaceChild(noteEdit, noteRenderer);
+    placeCaretAtEnd(edit);
+
   });
 
   //DeleteNote
