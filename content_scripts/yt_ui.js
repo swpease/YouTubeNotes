@@ -49,7 +49,7 @@ var noteInput_raw = '<div id="note-simplebox-create-note" class="comment-simpleb
                     '<div class="comment-simplebox-frame"><div class="comment-simplebox-prompt"></div><div class="comment-simplebox-text" role="textbox" aria-multiline="true" contenteditable="true" data-placeholder="Add a private note..."></div></div>' +
                     '<div class="comment-simplebox-controls"><div class="comment-simplebox-buttons">' +
                     '<button class="cancel-note-button yt-uix-button yt-uix-button-size-default yt-uix-button-default comment-simplebox-cancel" type="button" onclick=";return false;"><span class="yt-uix-button-content">Cancel</span>' +
-                    '</button><button class="make-note-button yt-uix-button yt-uix-button-size-default yt-uix-button-primary yt-uix-button-empty" type="button" onclick=";return false;" aria-label="Make Note" disabled="">Make Note</button></div></div></div></div>';
+                    '</button><button class="confirm-note-button yt-uix-button yt-uix-button-size-default yt-uix-button-primary yt-uix-button-empty" type="button" onclick=";return false;" aria-label="Make Note" disabled="">Make Note</button></div></div></div></div>';
                     // Need to add focused to id="note-simplebox" when clicked
 var notesSection = makeHTML(notesSection_raw);
 var noteInputWrapper = makeHTML(noteInputWrapper_raw);
@@ -59,23 +59,23 @@ var noteInput = makeHTML(noteInput_raw);
 var notesBox = noteInput.getElementsByClassName("comment-simplebox")[0];
 var note = noteInput.getElementsByClassName("comment-simplebox-text")[0];
 var cancelNoteBtn = noteInput.getElementsByClassName("cancel-note-button")[0];
-var makeNoteBtn = noteInput.getElementsByClassName("make-note-button")[0];
+var makeNoteBtn = noteInput.getElementsByClassName("confirm-note-button")[0];
 
 
 notesSection.appendChild(noteInputWrapper);
 noteInputWrapper.appendChild(noteInputDefault);
 
 // BEGIN Event functionality for making a new note
-function blurNote() {
-  notesBox.classList.remove("focus");
+function blurNote(commentSimplebox) {
+  commentSimplebox.classList.remove("focus");
 }
 
-function focusNote() {
-  notesBox.classList.add("focus");
+function focusNote(commentSimplebox) {
+  commentSimplebox.classList.add("focus");
 }
 
-function toggleNoteButtonEnabled() {
-  note.textContent == "" ? makeNoteBtn.disabled = true : makeNoteBtn.disabled = false;
+function toggleNoteButtonEnabled(commentSimpleboxText, confirmNoteButton, initialText = "") {
+  commentSimpleboxText.textContent == initialText ? confirmNoteButton.disabled = true : confirmNoteButton.disabled = false;
 }
 
 function switchToNoteInput() {
@@ -128,9 +128,9 @@ function makeNote() {
 noteInputDefault.addEventListener('click', switchToNoteInput);
 cancelNoteBtn.addEventListener('click', switchToNoteInputDefault);
 makeNoteBtn.addEventListener('click', makeNote);
-note.addEventListener('focus', focusNote);
-note.addEventListener('blur', blurNote);
-note.addEventListener('keyup', toggleNoteButtonEnabled);
+note.addEventListener('focus', function () { focusNote(notesBox) });
+note.addEventListener('blur', function () { blurNote(notesBox) });
+note.addEventListener('keyup', function () { toggleNoteButtonEnabled(note, makeNoteBtn) });
 // END Event functionalityFor making a new note
 
 // Begin UI for dispalying saved notes
@@ -145,12 +145,18 @@ var noteContent_raw = '<div class="comment-renderer-text" tabindex="0" role="art
 // footer. Contains the Edit and Delete functionality.
 var noteFooterPopup_raw = '<div class="yt-uix-menu-content yt-ui-menu-content yt-uix-kbd-nav" role="menu" aria-expanded="true" style="min-width: 18px; position: absolute; right: 0; top: 20;"><ul tabindex="0" class="yt-uix-kbd-nav yt-uix-kbd-nav-list"><li role="menuitem"><div class="service-endpoint-action-container hid"></div><button type="button" class="yt-ui-menu-item yt-uix-menu-close-on-select  comment-renderer-edit" data-simplebox-label="Save"><span class="yt-ui-menu-item-label">Edit</span></button></li><li role="menuitem" class=""><div class="service-endpoint-action-container hid"></div><button type="button" class="yt-ui-menu-item yt-uix-menu-close-on-select  comment-renderer-action-button"><span class="yt-ui-menu-item-label">Delete</span></button></li></ul></div>';
 
+// For the editing notes.Note to that YouTubeAs a single element that day Switcheroo and as needed.Not sure if faster.
+var noteEdit_raw = '<div class="comment-simplebox-edit comment-simplebox-content">' +
+                   '<div class="comment-simplebox"><div class="comment-simplebox-arrow"><div class="arrow-inner"></div><div class="arrow-outer"></div></div>' +
+                   '<div class="comment-simplebox-frame"><div class="comment-simplebox-prompt"></div><div class="note-simplebox-text comment-simplebox-text" role="textbox" aria-multiline="true" contenteditable="true"></div></div>' +
+                   '<div class="comment-simplebox-controls"><div class="comment-simplebox-buttons">' +
+                   '<button class="cancel-note-button yt-uix-button yt-uix-button-size-default yt-uix-button-default comment-simplebox-cancel" type="button" onclick=";return false;"><span class="yt-uix-button-content">Cancel</span>' +
+                   '</button><button class="confirm-note-button yt-uix-button yt-uix-button-size-default yt-uix-button-primary yt-uix-button-empty" type="button" onclick=";return false;" aria-label="Save" disabled="">Save</button></div></div></div></div>';
+
+
 var savedNotesWrapper = makeHTML(savedNotesWrapper_raw);
 notesSection.appendChild(savedNotesWrapper);
 
-function test() {
-  console.log("hello");
-}
 
 function displayFooterPopup() {
   footerBtn.classList.add("yt-uix-menu-trigger-selected");
@@ -205,7 +211,23 @@ function displayNote(noteTime, noteText) {
   // var footerBtn = noteRenderer.getElementsByClassName('note-footer-button')[0];
   // footerBtn.addEventListener('click', displayFooterPopup);
 
-  footerEditBtn.addEventListener('click', test);
+  footerEditBtn.addEventListener('click', function () {
+    var noteEdit = makeHTML(noteEdit_raw);
+    noteEdit.querySelector('.note-simplebox-text').textContent = noteText;
+
+    var editBox = noteEdit.getElementsByClassName("comment-simplebox")[0];
+    var edit = noteEdit.getElementsByClassName("comment-simplebox-text")[0];
+    var cancelEditBtn = noteEdit.getElementsByClassName("cancel-note-button")[0];
+    var makeEditBtn = noteEdit.getElementsByClassName("confirm-note-button")[0];
+
+    edit.addEventListener('focus', function () { focusNote(editBox) });
+    edit.addEventListener('blur', function () { blurNote(editBox) });
+    edit.addEventListener('keyup', function () { toggleNoteButtonEnabled(edit, makeEditBtn, noteText) });
+
+
+    noteRenderer.parentElement.insertBefore(noteEdit, noteRenderer);
+  });
+
   //DeleteNote
   footerDelBtn.addEventListener('click', function () {
     var gettingItem = browser.storage.local.get(videoId);
