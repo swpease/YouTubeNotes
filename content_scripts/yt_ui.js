@@ -139,13 +139,14 @@ var savedNotesWrapper_raw = '<div class="comment-section-renderer-items" id="sav
 // wrapper for noteRenderer (To switch with the edit textbox)
 var noteRendererWrapper_raw = '<section class="note-renderer comment-thread-renderer"></section>'
 // contains a single note. Also includes footer container (two outer layers). Also includes button for Edit/Delete popup.
-var noteRenderer_raw = '<div class="comment-renderer"><div class="comment-renderer-content"><div class="note-renderer-footer comment-renderer-footer"><div class="comment-action-buttons-toolbar"><button type="button" class="note-footer-edit-button">Edit</button><button type="button" class="note-footer-delete-button">Delete</button><div class="yt-uix-menu-container comment-renderer-action-menu yt-section-hover-container"><div class="yt-uix-menu yt-uix-menu-flipped"><button class="note-footer-button yt-uix-button yt-uix-button-size-default yt-uix-button-action-menu yt-uix-button-empty yt-uix-button-has-icon no-icon-markup yt-uix-menu-trigger yt-uix-menu-trigger-selected yt-uix-button-toggled" type="button" role="button" aria-pressed="false" aria-haspopup="true" aria-label="Action menu."></button></div></div></div></div></div></div>';
+var noteRenderer_raw = '<div class="comment-renderer"><div class="comment-renderer-content"><div class="note-renderer-footer comment-renderer-footer"><div class="comment-action-buttons-toolbar"><button type="button" class="note-footer-edit-button note-footer-btn notes-footer-item yt-uix-button yt-uix-button-link">Edit</button><button type="button" class="notes-footer-item note-footer-spacer yt-uix-button yt-uix-button-link">•</button><button type="button" class="note-footer-delete-button note-footer-btn notes-footer-item yt-uix-button yt-uix-button-link">Delete</button><div class="yt-uix-menu-container comment-renderer-action-menu yt-section-hover-container"><div class="yt-uix-menu yt-uix-menu-flipped"><button class="note-footer-button yt-uix-button yt-uix-button-size-default yt-uix-button-action-menu yt-uix-button-empty yt-uix-button-has-icon no-icon-markup yt-uix-menu-trigger" type="button" role="button" aria-pressed="false" aria-haspopup="true" aria-label="Action menu."></button></div></div></div></div></div></div>';
 // header. To add: a fn to set the currentTime = [text] and the text for the <span>. Added my own class 'note-video-time' for future use... Modded <a> to <span>
 var noteHeader_raw = '<div class="comment-renderer-header"><span class="comment-author-text note-video-time" style="cursor:pointer;">Time goes here</span></div>';
 // text content. To add: the text content. Added my own class 'note-text-content' for future use...
 var noteContent_raw = '<div class="comment-renderer-text" tabindex="0" role="article"><div class="comment-renderer-text-content note-text-content">Note goes here</div></div>';
-// footer. Contains the Edit and Delete functionality.
-var noteFooterPopup_raw = '<div class="yt-uix-menu-content yt-ui-menu-content yt-uix-kbd-nav" role="menu" aria-expanded="true" style="min-width: 18px; position: absolute; right: 0; top: 20;"><ul tabindex="0" class="yt-uix-kbd-nav yt-uix-kbd-nav-list"><li role="menuitem"><div class="service-endpoint-action-container hid"></div><button type="button" class="yt-ui-menu-item yt-uix-menu-close-on-select  comment-renderer-edit" data-simplebox-label="Save"><span class="yt-ui-menu-item-label">Edit</span></button></li><li role="menuitem" class=""><div class="service-endpoint-action-container hid"></div><button type="button" class="yt-ui-menu-item yt-uix-menu-close-on-select  comment-renderer-action-button"><span class="yt-ui-menu-item-label">Delete</span></button></li></ul></div>';
+// footer. Contains the Edit and Delete functionality. Insert after the button in noteRenderer.
+var noteFooterPopup_raw = '<div class="yt-uix-menu-content yt-ui-menu-content yt-uix-menu-content-hidden" role="menu"><ul tabindex="0" class="yt-uix-kbd-nav yt-uix-kbd-nav-list"><li role="menuitem"><div class="service-endpoint-action-container hid"></div><button type="button" class="yt-ui-menu-item yt-uix-menu-close-on-select  comment-renderer-edit" data-simplebox-label="Save"><span class="yt-ui-menu-item-label">Edit</span></button></li><li role="menuitem" class=""><div class="service-endpoint-action-container hid"></div><button type="button" class="yt-ui-menu-item yt-uix-menu-close-on-select  comment-renderer-action-button"><span class="yt-ui-menu-item-label">Delete</span></button></li></ul></div>';
+// style="min-width: 18px; position: absolute; right: 0; top: 20;"
 
 // For the editing notes.Note to that YouTubeAs a single element that day Switcheroo and as needed.Not sure if faster.
 //Me
@@ -161,21 +162,22 @@ var savedNotesWrapper = makeHTML(savedNotesWrapper_raw);
 notesSection.appendChild(savedNotesWrapper);
 
 
-function displayFooterPopup() {
+function displayFooterPopup(noteFooterPopup, footerBtn) {
   footerBtn.classList.add("yt-uix-menu-trigger-selected");
   footerBtn.classList.add("yt-uix-button-toggled");
+  noteFooterPopup.classList.remove("yt-uix-menu-content-hidden");
 
-  document.addEventListener('click', hideFooterPopup);
-  footerBtn.removeEventListener('click', displayFooterPopup);
+  document.addEventListener('click', function() { hideFooterPopup(footerBtn) });
+  // footerBtn.removeEventListener('click', displayFooterPopup);
 
-  footerBtn.parentElement.insertBefore(noteFooterPopup, footerBtn);
+  footerBtn.parentElement.insertBefore(noteFooterPopup, footerBtn.nextSibling);
 }
 
-function hideFooterPopup() {
+function hideFooterPopup(footerBtn) {
   footerBtn.classList.remove("yt-uix-menu-trigger-selected");
   footerBtn.classList.remove("yt-uix-button-toggled");
-
-  footerBtn.addEventListener('click', displayFooterPopup);
+  noteFooterPopup.classList.add("yt-uix-menu-content-hidden");
+  // footerBtn.addEventListener('click', displayFooterPopup);
 }
 
 // Call find display nodeSo that you know it's areDisplayIn order Vaitai
@@ -223,6 +225,7 @@ function displayNote(noteTime, noteText) {
   var footerEditBtn = noteRenderer.querySelector('.note-footer-edit-button');
   var footerDelBtn = noteRenderer.querySelector('.note-footer-delete-button');
   var noteFooter = noteRenderer.getElementsByClassName('note-renderer-footer')[0];
+  var footerBtn = noteRenderer.getElementsByClassName('note-footer-button')[0];
 
 
   noteContent.querySelector('.note-text-content').textContent = noteText;
@@ -232,8 +235,18 @@ function displayNote(noteTime, noteText) {
   noteRendererWrapper.appendChild(noteRenderer);
   noteFooter.parentElement.insertBefore(noteHeader, noteFooter);
   noteFooter.parentElement.insertBefore(noteContent, noteFooter);
-  // var footerBtn = noteRenderer.getElementsByClassName('note-footer-button')[0];
-  // footerBtn.addEventListener('click', displayFooterPopup);
+  footerBtn.parentElement.insertBefore(noteFooterPopup, footerBtn.nextSibling);
+
+
+  footerBtn.addEventListener('click', function() {
+    footerBtn.classList.add("yt-uix-menu-trigger-selected");
+    footerBtn.classList.add("yt-uix-button-toggled");
+    console.log("footerbtn: ", footerBtn.classList);
+
+    console.log(noteFooterPopup.classList);
+    noteFooterPopup.classList.remove("yt-uix-menu-content-hidden");
+    console.log(noteFooterPopup.classList);
+  });
 
   footerEditBtn.addEventListener('click', function () {
     var noteKeyTime = noteRendererWrapper.dataset.noteTime;  // For lookup by makeEditBtn click
