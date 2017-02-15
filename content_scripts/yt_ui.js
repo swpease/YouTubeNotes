@@ -360,6 +360,8 @@ function main() {
     detailsSection.parentElement.insertBefore(notesSection, detailsSection.nextSibling);
     // setup existing notes.
     setupExistingNotes()
+  } else {
+    formerVideoId = null;  // revisit same vid w/o other vid b/w
   }
 }
 

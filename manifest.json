@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "YouTube Notes",
+  "name": "YouTube Personal Notes",
   "version": "1.0",
 
   "description": "Make private notes at specific times on YouTube videos.",
@@ -11,8 +11,6 @@
   },
 
   "permissions": [
-    "activeTab",
-    "tabs",
     "storage"
   ],
 
@@ -28,10 +26,5 @@
           "/content_css/yt_ui.css"
         ]
     }
-  ],
-
-  "background": {
-    "scripts": ["background/page_action.js"]
-  }
-
+  ]
 }
