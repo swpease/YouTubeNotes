@@ -1,7 +1,7 @@
-//Global. Assigned by background script.
+//Global.
 var videoId;
 var videoTitle;
-
+var formerVideoId;
 //Needed in noteInput and savedNotes sections.
 var notesSection;
 var savedNotesWrapper;  // should de-globalize
@@ -295,10 +295,7 @@ function displayNote(noteTime, noteText) {
 }
 
 // Getting background info: Video ID and Title.
-function initialize(message) {
-  videoId = message.id;
-  videoTitle = message.title;
-
+function setupExistingNotes() {
   var gettingSavedNotes = browser.storage.local.get(videoId);
   gettingSavedNotes.then((result) => {
     if (Array.isArray(result)) {  // If Firefox version less than 52.
@@ -318,40 +315,57 @@ function initialize(message) {
   });
 }
 
+function getVideoId() {
+  var page = document.getElementById('page');
+
+  if (page == null) {
+    return null;
+  }
+
+  for (let cl of page.classList) {
+    if (cl.startsWith('video-')) {
+      return cl.substring(6);
+    }
+  }
+
+  return null;
+}
+
+function getVideoTitle() {
+  var titleEl = document.getElementById('eow-title');
+  if (titleEl != null) {
+    return titleEl.getAttribute('title');
+  } else {
+    return null;
+  }
+}
+
 function main() {
   console.log("main fn called!");
-  var testElement = document.getElementById('action-panel-details');
-  if (testElement != null) {
+  videoId = getVideoId();
+  videoTitle = getVideoTitle();
+  console.log('new id: ', videoId);
+  console.log('old id: ', formerVideoId);
+  console.log(videoTitle);
+  if (videoId != null && videoTitle != null && videoId != formerVideoId) {
     console.log("main fn executed!");
+    formerVideoId = videoId;  // prevents double injections
     //setup UI
+//Me to check30If it already exists
     setupNoteInputSection();
     savedNotesWrapper = makeHTML(savedNotesWrapper_raw); // could pass to insertByTime or query in insertByTime;
     notesSection.appendChild(savedNotesWrapper);
     // inject UI onto page
     var detailsSection = document.getElementById('action-panel-details');
     detailsSection.parentElement.insertBefore(notesSection, detailsSection.nextSibling);
-    // get page-specific details and setup existing notes.
-    browser.runtime.sendMessage({});
+    // setup existing notes.
+    setupExistingNotes()
   }
 }
 
-browser.runtime.onMessage.addListener(initialize);
 
-function checkIfVideo() {
-  /*
-  Callback for pageObserver.
-  If it isn't a video page, disconnects the page from pageObserver.
-  If there IS, calls main.
-  */
-  let detailsSection = document.getElementById('action-panel-details');
-  if (detailsSection != null) {
-    main();
-  }
-}
-
-// I just found out I don't need the background script at all. Just look at the page's class list!
 var page = document.getElementById("page");
-var pageObserver = new MutationObserver(checkIfVideo);
-pageObserver.observe(page, { attributes: true });  // Don't understand why "attributes" is what works.
+var pageObserver = new MutationObserver(main);
+pageObserver.observe(page, { attributes: true });
 
 main();
