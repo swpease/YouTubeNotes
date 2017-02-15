@@ -4,6 +4,7 @@ var videoTitle;
 
 //Needed in noteInput and savedNotes sections.
 var notesSection;
+var savedNotesWrapper;  // should de-globalize
 
 // Raw HTML. Taken and modded from YouTube.
 // main wrapper
@@ -95,7 +96,7 @@ function switchToNoteInputDefault(notesBox, noteInputWrapper, note, noteInput, n
   noteInputWrapper.replaceChild(noteInputDefault, noteInput);
 }
 
-//UponClicking to add a note,Displays the note belowAnd and sit to local storage
+//UponClicking to add a note,Displays the note belowAnd adds it to local storage
 function makeNote(notesBox, noteInputWrapper, note, noteInput, noteInputDefault) {
   var ytVideo = document.querySelector('.html5-main-video');
   var noteTime = ytVideo.currentTime; //Don't forage until after storage.Could you accidentally overwriteStill,But highly unlikely
@@ -129,13 +130,9 @@ function makeNote(notesBox, noteInputWrapper, note, noteInput, noteInputDefault)
     }
   });
 }
-// END Event functionalityFor making a new note
+
 
 // Begin UI for dispalying saved notes
-
-setupNoteInputSection();
-var savedNotesWrapper = makeHTML(savedNotesWrapper_raw); // globalize or pass to insertByTime or query in insertByTime;
-notesSection.appendChild(savedNotesWrapper);
 
 //Converts a time in seconds to a time in format (hh):(mm):(ss) (ish).
 function prettifyTime(time) {
@@ -321,9 +318,18 @@ function initialize(message) {
   });
 }
 
-browser.runtime.onMessage.addListener(initialize);
-browser.runtime.sendMessage({});
-// End background script interaction
+function main() {
+  //setup UI
+  setupNoteInputSection();
+  savedNotesWrapper = makeHTML(savedNotesWrapper_raw); // could pass to insertByTime or query in insertByTime;
+  notesSection.appendChild(savedNotesWrapper);
+  // inject UI onto page
+  var detailsSection = document.getElementById('action-panel-details');
+  detailsSection.parentElement.insertBefore(notesSection, detailsSection.nextSibling);
+  // get page-specific details and setup existing notes.
+  browser.runtime.sendMessage({});
+}
 
-var detailsSection = document.getElementById('action-panel-details');
-detailsSection.parentElement.insertBefore(notesSection, detailsSection.nextSibling);
+browser.runtime.onMessage.addListener(initialize);
+
+main();
