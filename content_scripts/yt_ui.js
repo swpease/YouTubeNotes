@@ -99,7 +99,7 @@ function switchToNoteInputDefault(notesBox, noteInputWrapper, note, noteInput, n
 //UponClicking to add a note,Displays the note belowAnd adds it to local storage
 function makeNote(notesBox, noteInputWrapper, note, noteInput, noteInputDefault) {
   var ytVideo = document.querySelector('.html5-main-video');
-  var noteTime = ytVideo.currentTime; //Don't forage until after storage.Could you accidentally overwriteStill,But highly unlikely
+  var noteTime = ytVideo.currentTime; //Don't format until after storage.Could you accidentally overwriteStill,But highly unlikely
   var noteText = note.textContent;
 
   var gettingItem = browser.storage.local.get(videoId);
@@ -120,7 +120,6 @@ function makeNote(notesBox, noteInputWrapper, note, noteInput, noteInputDefault)
       });
     } else {
       var currentNotes = result[videoId]["notes"];  // Object
-      // console.log(currentNotes);
       currentNotes[[noteTime]] = noteText;
       var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
       storingNote.then(() => {
@@ -132,7 +131,7 @@ function makeNote(notesBox, noteInputWrapper, note, noteInput, noteInputDefault)
 }
 
 
-// Begin UI for dispalying saved notes
+// Dispalying saved notes:
 
 //Converts a time in seconds to a time in format (hh):(mm):(ss) (ish).
 function prettifyTime(time) {
@@ -165,7 +164,7 @@ function prettifyTime(time) {
   return prettyTime;
 }
 
-// Call find display nodeSo that you know it's areDisplayIn order Vaitai
+// Called by displaynode so that you know they areDisplayedIn order by time.
 function insertByTime(note) {
   var displayedNotes = savedNotesWrapper.getElementsByClassName('note-renderer');
 
@@ -294,7 +293,6 @@ function displayNote(noteTime, noteText) {
   insertByTime(noteRendererWrapper);
 }
 
-// Getting background info: Video ID and Title.
 function setupExistingNotes() {
   var gettingSavedNotes = browser.storage.local.get(videoId);
   gettingSavedNotes.then((result) => {
@@ -308,7 +306,6 @@ function setupExistingNotes() {
 
     var savedNotes = result[videoId]["notes"];
     for (var noteTime of Object.keys(savedNotes)) {
-      // console.log(noteTime, savedNotes[noteTime]);
       var noteText = savedNotes[noteTime];
       displayNote(noteTime, noteText);
     }
@@ -341,17 +338,11 @@ function getVideoTitle() {
 }
 
 function main() {
-  console.log("main fn called!");
   videoId = getVideoId();
   videoTitle = getVideoTitle();
-  console.log('new id: ', videoId);
-  console.log('old id: ', formerVideoId);
-  console.log(videoTitle);
   if (videoId != null && videoTitle != null && videoId != formerVideoId) {
-    console.log("main fn executed!");
     formerVideoId = videoId;  // prevents double injections
     //setup UI
-//Me to check30If it already exists
     setupNoteInputSection();
     savedNotesWrapper = makeHTML(savedNotesWrapper_raw); // could pass to insertByTime or query in insertByTime;
     notesSection.appendChild(savedNotesWrapper);
@@ -359,7 +350,7 @@ function main() {
     var detailsSection = document.getElementById('action-panel-details');
     detailsSection.parentElement.insertBefore(notesSection, detailsSection.nextSibling);
     // setup existing notes.
-    setupExistingNotes()
+    setupExistingNotes();
   } else {
     formerVideoId = null;  // revisit same vid w/o other vid b/w
   }
