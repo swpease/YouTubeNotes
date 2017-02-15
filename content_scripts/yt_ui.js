@@ -319,17 +319,39 @@ function initialize(message) {
 }
 
 function main() {
-  //setup UI
-  setupNoteInputSection();
-  savedNotesWrapper = makeHTML(savedNotesWrapper_raw); // could pass to insertByTime or query in insertByTime;
-  notesSection.appendChild(savedNotesWrapper);
-  // inject UI onto page
-  var detailsSection = document.getElementById('action-panel-details');
-  detailsSection.parentElement.insertBefore(notesSection, detailsSection.nextSibling);
-  // get page-specific details and setup existing notes.
-  browser.runtime.sendMessage({});
+  console.log("main fn called!");
+  var testElement = document.getElementById('action-panel-details');
+  if (testElement != null) {
+    console.log("main fn executed!");
+    //setup UI
+    setupNoteInputSection();
+    savedNotesWrapper = makeHTML(savedNotesWrapper_raw); // could pass to insertByTime or query in insertByTime;
+    notesSection.appendChild(savedNotesWrapper);
+    // inject UI onto page
+    var detailsSection = document.getElementById('action-panel-details');
+    detailsSection.parentElement.insertBefore(notesSection, detailsSection.nextSibling);
+    // get page-specific details and setup existing notes.
+    browser.runtime.sendMessage({});
+  }
 }
 
 browser.runtime.onMessage.addListener(initialize);
+
+function checkIfVideo() {
+  /*
+  Callback for pageObserver.
+  If it isn't a video page, disconnects the page from pageObserver.
+  If there IS, calls main.
+  */
+  let detailsSection = document.getElementById('action-panel-details');
+  if (detailsSection != null) {
+    main();
+  }
+}
+
+// I just found out I don't need the background script at all. Just look at the page's class list!
+var page = document.getElementById("page");
+var pageObserver = new MutationObserver(checkIfVideo);
+pageObserver.observe(page, { attributes: true });  // Don't understand why "attributes" is what works.
 
 main();
