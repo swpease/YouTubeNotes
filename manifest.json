@@ -1,33 +1,23 @@
 {
   "manifest_version": 2,
-  "name": "YouTube Notes",
+  "name": "YouTube Personal Notes",
   "version": "1.0",
 
-  "description": "Mark times of interest in your liked videos and make notes about them.",
+  "description": "Make private notes at specific times on YouTube videos.",
   "author": "Scott Pease",
 
   "icons": {
-    "48": "icons/border-48.png"
-  },
-
-  "page_action": {
-    "browser_style": true,
-    "default_icon": "icons/chillout.png",
-    "default_title": "Make a note for this video time",
-    "default_popup": "popup/notes_ui.html"
+    "48": "icons/ytn_icon-48.png"
   },
 
   "permissions": [
-    "activeTab",
-    "tabs",
     "storage"
   ],
-
 
   "content_scripts": [
     {
         "matches": [
-          "*://*.youtube.com/watch*"
+          "*://*.youtube.com/*"
         ],
         "js": [
           "/content_scripts/yt_ui.js"
@@ -35,20 +25,6 @@
         "css": [
           "/content_css/yt_ui.css"
         ]
-    },
-    {
-      "matches": [
-        "*://*.youtube.com/channel/*/videos*",
-        "*://*.youtube.com/user/*/videos*"
-      ],
-      "js": [
-        "/content_scripts/likes_page.js"
-      ]
     }
-  ],
-
-  "background": {
-    "scripts": ["background/page_action.js"]
-  }
-
+  ]
 }
