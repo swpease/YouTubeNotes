@@ -1,7 +1,6 @@
 //Global.
 var videoId;
 var videoTitle;
-var formerVideoId;
 //Needed in noteInput and savedNotes sections.
 var notesSection;
 var savedNotesWrapper;  // should de-globalize
@@ -340,8 +339,8 @@ function getVideoTitle() {
 function main() {
   videoId = getVideoId();
   videoTitle = getVideoTitle();
-  if (videoId != null && videoTitle != null && videoId != formerVideoId) {
-    formerVideoId = videoId;  // prevents double injections
+  var injectedContent = document.getElementById('notes-wrapper');
+  if (videoId != null && videoTitle != null && injectedContent == null) {
     //setup UI
     setupNoteInputSection();
     savedNotesWrapper = makeHTML(savedNotesWrapper_raw); // could pass to insertByTime or query in insertByTime;
@@ -351,8 +350,6 @@ function main() {
     detailsSection.parentElement.insertBefore(notesSection, detailsSection.nextSibling);
     // setup existing notes.
     setupExistingNotes();
-  } else {
-    formerVideoId = null;  // revisit same vid w/o other vid b/w
   }
 }
 
