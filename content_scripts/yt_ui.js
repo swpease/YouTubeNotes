@@ -26,7 +26,7 @@ var noteRendererWrapper_raw = '<section class="note-renderer comment-thread-rend
 // contains a single note. Also includes footer.
 var noteRenderer_raw = '<div class="comment-renderer"><div class="comment-renderer-content"><div class="note-renderer-footer comment-renderer-footer"><div class="comment-action-buttons-toolbar"><button type="button" class="note-footer-edit-button note-footer-btn notes-footer-item yt-uix-button yt-uix-button-link">Edit</button><button type="button" class="notes-footer-item note-footer-spacer yt-uix-button yt-uix-button-link">•</button><button type="button" class="note-footer-delete-button note-footer-btn notes-footer-item yt-uix-button yt-uix-button-link">Delete</button></div></div></div></div>';
 var noteHeader_raw = '<div class="comment-renderer-header"><span class="comment-author-text note-video-time" style="cursor:pointer;">Time goes here</span></div>';
-var noteContent_raw = '<div class="comment-renderer-text" tabindex="0" role="article"><div class="comment-renderer-text-content note-text-content">Note goes here</div></div>';
+var noteContent_raw = '<div class="comment-renderer-text" tabindex="0" role="article"><div class="comment-renderer-text-content expanded note-text-content">Note goes here</div></div>';
 // Just like the noteInput section.
 var noteEdit_raw = '<div class="comment-renderer comment-renderer-editing"><div class="comment-simplebox-edit comment-simplebox-content">' +
                    '<div class="comment-simplebox focus"><div class="comment-simplebox-arrow"><div class="arrow-inner"></div><div class="arrow-outer"></div></div>' +
@@ -80,7 +80,7 @@ function focusNote(commentSimplebox) {
 }
 
 function toggleNoteButtonEnabled(commentSimpleboxText, confirmNoteButton, initialText = "") {
-  commentSimpleboxText.textContent == initialText ? confirmNoteButton.disabled = true : confirmNoteButton.disabled = false;
+  commentSimpleboxText.innerHTML == initialText ? confirmNoteButton.disabled = true : confirmNoteButton.disabled = false;
 }
 
 function switchToNoteInput(notesBox, noteInputWrapper, note, noteInput, noteInputDefault) {
@@ -99,7 +99,8 @@ function switchToNoteInputDefault(notesBox, noteInputWrapper, note, noteInput, n
 function makeNote(notesBox, noteInputWrapper, note, noteInput, noteInputDefault) {
   var ytVideo = document.querySelector('.html5-main-video');
   var noteTime = ytVideo.currentTime; //Don't format until after storage.Could you accidentally overwriteStill,But highly unlikely
-  var noteText = note.textContent;
+  var noteText = note.innerHTML;
+  console.log(noteText);
 
   var gettingItem = browser.storage.local.get(videoId);
   gettingItem.then((result) => {
@@ -209,7 +210,7 @@ function displayNote(noteTime, noteText) {
   var noteFooter = noteRenderer.getElementsByClassName('note-renderer-footer')[0];
 
 
-  noteContent.querySelector('.note-text-content').textContent = noteText;
+  noteContent.querySelector('.note-text-content').innerHTML = noteText;
   noteTimeElement.textContent = prettifyTime(noteTime);
   noteRendererWrapper.setAttribute('data-note-time', noteTime);
 
@@ -222,7 +223,7 @@ function displayNote(noteTime, noteText) {
     var noteKeyTime = noteRendererWrapper.dataset.noteTime;  // For lookup by makeEditBtn click
 
     var noteEdit = makeHTML(noteEdit_raw);
-    noteEdit.querySelector('.note-simplebox-text').textContent = noteContent.querySelector('.note-text-content').textContent;
+    noteEdit.querySelector('.note-simplebox-text').innerHTML = noteContent.querySelector('.note-text-content').innerHTML;
 
     var editBox = noteEdit.getElementsByClassName("comment-simplebox")[0];
     var edit = noteEdit.getElementsByClassName("comment-simplebox-text")[0];
@@ -239,7 +240,7 @@ function displayNote(noteTime, noteText) {
     });
 
     makeEditBtn.addEventListener('click', function () {
-      var editedText = noteEdit.querySelector('.note-simplebox-text').textContent;
+      var editedText = noteEdit.querySelector('.note-simplebox-text').innerHTML;
 
       var gettingItem = browser.storage.local.get(videoId);
       gettingItem.then((result) => {
@@ -251,7 +252,7 @@ function displayNote(noteTime, noteText) {
         currentNotes[[noteKeyTime]] = editedText;
         var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
         storingNote.then(() => {
-          noteContent.querySelector('.note-text-content').textContent = editedText;
+          noteContent.querySelector('.note-text-content').innerHTML = editedText;
           noteEdit.parentElement.replaceChild(noteRenderer, noteEdit);
           noteEdit.remove();
         });
