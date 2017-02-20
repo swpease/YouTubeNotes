@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "YouTube Personal Notes",
-  "version": "1.2",
+  "version": "1.3",
 
   "description": "Make private notes at specific times on YouTube videos.",
   "author": "Scott Pease",
