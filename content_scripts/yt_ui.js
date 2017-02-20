@@ -145,7 +145,7 @@ function prettifyTime(time) {
   var mins = Math.floor(rem / 60);
   var secs = rem % 60;
 
-  if (vidHrs > 0) {
+  if (vidHrs > 0 || hours > 0) {
     prettyTime += hours + ":";
     if (mins < 10) {
       prettyTime += "0" + mins + ":";
