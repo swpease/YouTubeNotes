@@ -338,7 +338,7 @@ function setupExistingNotes() {
   });
 }
 
-/* Assigns value to the global videoId.
+/* Gets YT video ID.
  * @return {null or string}: The video's ID, if it exists, else null.
  */
 function getVideoId() {
@@ -357,7 +357,7 @@ function getVideoId() {
   return null;
 }
 
-/* Assigns value to the global videoTitle.
+/* Gets YT video title.
  * @return {null or string}: The video's title, if it exists, else null.
  */
 function getVideoTitle() {
