@@ -295,7 +295,6 @@ function displayNote(noteTime, noteText) {
       if (Array.isArray(result)) {  // If Firefox version less than 52.
         result = result[0];
       }
-      var objTest = Object.keys(result);
 
       var currentNotes = result[videoId]["notes"];  // Object
       delete currentNotes[[noteTime]];
