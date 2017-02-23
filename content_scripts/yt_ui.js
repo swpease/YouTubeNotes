@@ -9,9 +9,12 @@ var savedNotesWrapper;  // should de-globalize
 // main wrapper
 var notesSection_raw = '<div id="notes-wrapper" class="yt-card yt-card-has-padding"></div>';
 var notesSectionHeader_raw = '<h2 class="comment-section-header-renderer" tabindex="0"><b>Notes</b></h2>';
-// Sections for making a new note.
+
+// Sections for making a new note:
 var noteInputWrapper_raw = '<div id="notes-input-wrapper" class="comment-simplebox-renderer"></div>';
+// The default "make a new note" section.
 var noteInputDefault_raw = '<div class="comment-simplebox-renderer-collapsed comment-simplebox-trigger" tabindex="0" role="form" aria-haspopup="true"><div class="comment-simplebox-renderer-collapsed-content">Add a private note...</div><div class="comment-simplebox-arrow"><div class="arrow-inner"></div><div class="arrow-outer"></div></div></div>';
+// The element displayed when you click to make a new note.
 var noteInput_raw = '<div id="note-simplebox-create-note" class="comment-simplebox-content"><div class="comment-simplebox" id="note-simplebox"><div class="comment-simplebox-arrow"><div class="arrow-inner"></div><div class="arrow-outer"></div></div>' +
                     '<div class="comment-simplebox-frame"><div class="comment-simplebox-prompt"></div><div class="comment-simplebox-text" role="textbox" aria-multiline="true" contenteditable="true" data-placeholder="Add a private note..."></div></div>' +
                     '<div class="comment-simplebox-controls"><div class="comment-simplebox-buttons">' +
@@ -21,7 +24,7 @@ var noteInput_raw = '<div id="note-simplebox-create-note" class="comment-simpleb
 // Equivalent of the part below the horizontal bar:
 // contains all the notes
 var savedNotesWrapper_raw = '<div class="comment-section-renderer-items" id="saved-notes-section-renderer-items"></div>';
-// wrapper for noteRenderer (To switch with the edit textbox)
+// wrapper for noteRenderer (To switch with noteEdit)
 var noteRendererWrapper_raw = '<section class="note-renderer comment-thread-renderer"></section>'
 // contains a single note. Also includes footer.
 var noteRenderer_raw = '<div class="comment-renderer"><div class="comment-renderer-content"><div class="note-renderer-footer comment-renderer-footer"><div class="comment-action-buttons-toolbar"><button type="button" class="note-footer-edit-button note-footer-btn notes-footer-item yt-uix-button yt-uix-button-link">Edit</button><button type="button" class="notes-footer-item note-footer-spacer yt-uix-button yt-uix-button-link">•</button><button type="button" class="note-footer-delete-button note-footer-btn notes-footer-item yt-uix-button yt-uix-button-link">Delete</button></div></div></div></div>';
@@ -36,14 +39,22 @@ var noteEdit_raw = '<div class="comment-renderer comment-renderer-editing"><div 
                    '</button><button class="confirm-note-button yt-uix-button yt-uix-button-size-default yt-uix-button-primary yt-uix-button-empty" type="button" onclick=";return false;" aria-label="Save" disabled="">Save</button></div></div></div></div></div>';
 
 
-
+/* Takes a string and converts it to a HTML element.
+ * @param {string} input: thing to convert to HTML element
+ * @return {DOM element}
+ */
 function makeHTML(input){
   var dummy = document.createElement('div');
   dummy.innerHTML = input;
   return dummy.firstChild;
 }
 
-
+/* The equivalent in YouTube's comments section is the part where you enter in
+ * your comment to post, at the top of the comments section.
+ * This fn makes the Elements, extracts any additional Elements needed for
+ * event handling, puts everything together, and inserts it into the global
+ * notesSection (outermost) Element.
+ */
 function setupNoteInputSection() {
   notesSection = makeHTML(notesSection_raw);
   var notesSectionHeader = makeHTML(notesSectionHeader_raw);
@@ -70,7 +81,7 @@ function setupNoteInputSection() {
   note.addEventListener('keyup', function () { toggleNoteButtonEnabled(note, makeNoteBtn) });
 }
 
-// BEGIN Event functionality for making a new note
+// BEGIN Event functionality for making a new note. First three fn's also used in note editing.
 function blurNote(commentSimplebox) {
   commentSimplebox.classList.remove("focus");
 }
@@ -95,12 +106,14 @@ function switchToNoteInputDefault(notesBox, noteInputWrapper, note, noteInput, n
   noteInputWrapper.replaceChild(noteInputDefault, noteInput);
 }
 
-//UponClicking to add a note,Displays the note belowAnd adds it to local storage
+/* Upon clicking to add a note, displays the note and adds it to local storage.
+ * @param {Element} note: Contains the note to save.
+ * @param {Element} the other four: just here to be passed to subsequent fn's.
+ */
 function makeNote(notesBox, noteInputWrapper, note, noteInput, noteInputDefault) {
   var ytVideo = document.querySelector('.html5-main-video');
-  var noteTime = ytVideo.currentTime; //Don't format until after storage.Could you accidentally overwriteStill,But highly unlikely
+  var noteTime = ytVideo.currentTime; //Don't format until after storage. Could still accidentally overwrite, but highly unlikely.
   var noteText = note.innerHTML;
-  console.log(noteText);
 
   var gettingItem = browser.storage.local.get(videoId);
   gettingItem.then((result) => {
@@ -111,8 +124,8 @@ function makeNote(notesBox, noteInputWrapper, note, noteInput, noteInputDefault)
 
     if(!objTest.includes(videoId)) {
       var storingNote = browser.storage.local.set({ [videoId] : { "title" : videoTitle,
-                                                                "notes" : { [noteTime] : noteText }
-                                                              }
+                                                                  "notes" : { [noteTime] : noteText }
+                                                                }
                                                   });
       storingNote.then(() => {
         displayNote(noteTime, noteText);
@@ -133,7 +146,10 @@ function makeNote(notesBox, noteInputWrapper, note, noteInput, noteInputDefault)
 
 // Dispalying saved notes:
 
-//Converts a time in seconds to a time in format (hh):(mm):(ss) (ish).
+/* Converts a time in seconds to a time in YouTube format: ((h)h):(mm):ss (ish).
+ * @param {string} time: A float representing the video time in seconds.
+ * @return {string}: formatted hh:mm:ss
+ */
 function prettifyTime(time) {
   var vidDuration = document.querySelector('.html5-main-video').duration;
   var vidHrs = Math.floor(vidDuration / 3600);
@@ -164,7 +180,9 @@ function prettifyTime(time) {
   return prettyTime;
 }
 
-// Called by displaynode so that you know they areDisplayedIn order by time.
+/* Called by displayNote so that you know they are displayed in order by time.
+ * @param {Element} note: a noteRendererWrapper
+ */
 function insertByTime(note) {
   var displayedNotes = savedNotesWrapper.getElementsByClassName('note-renderer');
 
@@ -198,6 +216,12 @@ function placeCaretAtEnd(el) {
     }
 }
 
+/* Ugh.
+ * Sets up the note's Elements, extracts relevant Elements for event listening,
+ * then makes the event listeners, and inserts the note into the DOM.
+ * @param {string} noteTime: The video's time at the moment that "Save Note" was clicked.
+ * @param {string} noteText: The note that the user wants to save.
+ */
 function displayNote(noteTime, noteText) {
   var noteRendererWrapper = makeHTML(noteRendererWrapper_raw);
   var noteRenderer = makeHTML(noteRenderer_raw);
@@ -293,6 +317,9 @@ function displayNote(noteTime, noteText) {
   insertByTime(noteRendererWrapper);
 }
 
+
+// Initialization stuff:
+
 function setupExistingNotes() {
   var gettingSavedNotes = browser.storage.local.get(videoId);
   gettingSavedNotes.then((result) => {
@@ -312,6 +339,9 @@ function setupExistingNotes() {
   });
 }
 
+/* Assigns value to the global videoId.
+ * @return {null or string}: The video's ID, if it exists, else null.
+ */
 function getVideoId() {
   var page = document.getElementById('page');
 
@@ -328,6 +358,9 @@ function getVideoId() {
   return null;
 }
 
+/* Assigns value to the global videoTitle.
+ * @return {null or string}: The video's title, if it exists, else null.
+ */
 function getVideoTitle() {
   var titleEl = document.getElementById('eow-title');
   if (titleEl != null) {
@@ -354,7 +387,7 @@ function main() {
   }
 }
 
-
+// Need MutationObserver b/c YouTube doesn't reload upon moving to new pages when already on YT.
 var page = document.getElementById("page");
 var pageObserver = new MutationObserver(main);
 pageObserver.observe(page, { attributes: true });
