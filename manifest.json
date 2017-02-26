@@ -11,8 +11,7 @@
   },
 
   "permissions": [
-    "storage",
-    "tabs"
+    "storage"
   ],
 
   "content_scripts": [
@@ -29,15 +28,14 @@
     }
   ],
 
-  "background": {
-    "scripts": ["background_scripts/background.js"]
-  },
-
-  "page_action": {
+  "browser_action": {
     "browser_style": true,
     "default_icon": {
+      "16": "icons/YTN_icon-16.png",
       "19": "icons/YTN_icon-19.png",
-      "38": "icons/YTN_icon-38.png"
+      "32": "icons/YTN_icon-32.png",
+      "38": "icons/YTN_icon-38.png",
+      "64": "icons/YTN_icon-64.png"
     },
     "default_title": "YouTube Notes Search Tool"
   }
