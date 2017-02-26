@@ -37,6 +37,7 @@
       "38": "icons/YTN_icon-38.png",
       "64": "icons/YTN_icon-64.png"
     },
-    "default_title": "YouTube Notes Search Tool"
+    "default_title": "YouTube Notes Search Tool",
+    "default_popup": "browser_action/popup.html"
   }
 }
