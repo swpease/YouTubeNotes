@@ -13,7 +13,7 @@
     }
 
     for (var videoId of videoIds) {
-      var baseUrl = "https://www.youtube.com/watch?v=" + videoId;
+      const baseUrl = "https://www.youtube.com/watch?v=" + videoId;
 
       var videoNotes = document.createElement('div');
       videoNotes.setAttribute('class', 'video-notes');
