@@ -47,3 +47,40 @@
 }
 
 setupExistingNotes();
+
+
+var searchEl = document.querySelector('input');
+var searchText = ""
+searchEl.addEventListener('keyup', function() {
+  var newText = searchEl.value.toLocaleLowerCase();
+
+  if (newText == searchText) {
+    return;
+  } else {
+    searchText = newText;
+  }
+
+  let allVideoNotes = document.getElementsByClassName('video-notes');
+  for (let videoNotes of allVideoNotes) {
+    let title = videoNotes.querySelector('h2');
+    let titleText = title.textContent.toLocaleLowerCase();
+    let notes = videoNotes.getElementsByClassName('note');
+    let anyNotesMatch = false;
+
+    for (let note of notes) {
+      let noteText = note.textContent.toLocaleLowerCase();
+      if (noteText.includes(searchText)) {
+        note.style.display = 'initial';
+        anyNotesMatch = true;
+      } else {
+        note.style.display = 'none';
+      }
+    }
+
+    if (!titleText.includes(searchText) && !anyNotesMatch) {
+      videoNotes.style.display = 'none';
+    } else {
+      videoNotes.style.display = 'initial';
+    }
+  }
+})
