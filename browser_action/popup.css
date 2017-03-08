@@ -5,16 +5,16 @@
 }
 
 html {
-  font-family: sans-serif;
+  font-family: Roboto, arial, sans-serif;
   font-size: 10px;
-  background: rgb(240,240,240);
+  background: rgb(230,230,230);
   height: 300px;
   margin: 0;
 }
 
 body {
   width: 300px;
-  background: rgb(240,240,240);
+  /*background: rgb(240,240,240);*/
   margin: 0 auto;
   padding: 2px;
   height: inherit;
@@ -24,35 +24,28 @@ body {
   overflow: auto;
   width: 100%;
   height: 290px;
-  background: rgb(240,240,240);
+  /*background: rgb(240,240,240);*/
 }
 
 /* form control styling */
 
-input /*textarea*/ /*button*/ {
-  border: 1px solid rgb(218,218,218);
+input {
+  /*border: 1px solid rgb(218,218,218);*/
   padding: 4px;
   background: white;
   border-radius: 3px;
+  font-family: Roboto, arial, sans-serif;
+  font-size: 1.2rem;
+  line-height: 1.5;
+  width: 100%;
+  margin-bottom: 2px;
 }
 
-/*button {
-  background: #ccc;
-  box-shadow: inset -2px -2px 1px rgba(0,0,0,0.2);
-  transition: 0.1s all;
-}
 
-button:hover, button:focus {
-  background: #ddd;
-}
-
-button:active {
-  box-shadow: inset -2px -2px 1px rgba(0,0,0,0.05);
-}*/
-
-input /*textarea*/ {
-  font-family: sans-serif;
-  box-shadow: inset 2px 2px 1px rgba(0,0,0,0.10);
+.search {
+  width: 100%;
+  margin-bottom: 5px;
+  padding: 2px;
 }
 
 /* Typography */
@@ -61,48 +54,28 @@ h2 {
   font-size: 1.3rem;
 }
 
-p, input /*textarea*/ {
-  font-size: 1.2rem;
-  line-height: 1.5;
-}
-
-/* New notes entry box */
-
-.search {
-  width: 100%;
-  margin-bottom: 5px;
-  padding: 2px;
-}
-
-input {
-  width: 100%;
-  margin-bottom: 2px;
-}
-
-/*textarea {
-  width: 100%;
-  margin-bottom: 4px;
-  resize: none;
-}*/
-
 /* Notes display box(es) */
 
+.video-notes {
+  padding-bottom: 4px;
+  border-bottom-width: 4px;
+  border-bottom-style: double;
+  border-bottom-color: rgb(100, 100, 100);
+}
+
+/*.video-notes-container:last-child {
+  border: 0;
+}*/
+
 .note {
-  padding: 2px;
+  margin: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  background: rgb(245, 245, 245);
 }
 
-.delete {
-  float: right;
-}
-
-p {
-  margin: 0;
-}
-
-.cancel {
-  float: left;
-}
-
-.update {
-  float: right;
+.note:hover {
+  background: rgb(250, 250, 250);
+  cursor: pointer;
+  transition: 0.1s all;
 }

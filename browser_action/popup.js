@@ -1,4 +1,4 @@
-  function setupExistingNotes() {
+function setupExistingNotes() {
   var gettingSavedNotes = browser.storage.local.get();
   gettingSavedNotes.then((result) => {
     if (Array.isArray(result)) {  // If Firefox version less than 52.
@@ -70,7 +70,7 @@ searchEl.addEventListener('keyup', function() {
     for (let note of notes) {
       let noteText = note.textContent.toLocaleLowerCase();
       if (noteText.includes(searchText)) {
-        note.style.display = 'initial';
+        note.style.display = 'block';
         anyNotesMatch = true;
       } else {
         note.style.display = 'none';
@@ -80,7 +80,7 @@ searchEl.addEventListener('keyup', function() {
     if (!titleText.includes(searchText) && !anyNotesMatch) {
       videoNotes.style.display = 'none';
     } else {
-      videoNotes.style.display = 'initial';
+      videoNotes.style.display = 'block';
     }
   }
 })
