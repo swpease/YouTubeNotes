@@ -49,6 +49,7 @@ function setupExistingNotes() {
 setupExistingNotes();
 
 
+var searchElWrapper = document.querySelector('.search');
 var searchEl = document.querySelector('input');
 var searchText = ""
 searchEl.addEventListener('keyup', function() {
@@ -83,4 +84,11 @@ searchEl.addEventListener('keyup', function() {
       videoNotes.style.display = 'block';
     }
   }
+})
+
+searchEl.addEventListener('focus', function() {
+  searchElWrapper.classList.add('search-focused');
+})
+searchEl.addEventListener('blur', function() {
+  searchElWrapper.classList.remove('search-focused');
 })
