@@ -342,28 +342,25 @@ function setupExistingNotes() {
  * @return {null or string}: The video's ID, if it exists, else null.
  */
 function getVideoId() {
-  var page = document.getElementById('page');
+  var href = window.location.href;
+  var vidSplit = href.split("v=");
 
-  if (page == null) {
+  if (vidSplit.length == 1) {
     return null;
   }
 
-  for (let cl of page.classList) {
-    if (cl.startsWith('video-')) {
-      return cl.substring(6);
-    }
-  }
+  var vidHalf = vidSplit[1];
 
-  return null;
+  return vidHalf.split("&")[0];
 }
 
 /* Gets YT video title.
  * @return {null or string}: The video's title, if it exists, else null.
  */
 function getVideoTitle() {
-  var titleEl = document.getElementById('eow-title');
+  var titleEl = document.querySelector('#container > h1');
   if (titleEl != null) {
-    return titleEl.getAttribute('title');
+    return titleEl.innerHTML;
   } else {
     return null;
   }
