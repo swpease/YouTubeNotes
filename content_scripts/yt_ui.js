@@ -172,14 +172,16 @@ function setupNoteCreate(create, observer) {
     defaultText.innerHTML = "Add a private note...";
 
     let placeholderArea = create.querySelector("#placeholder-area");
-    let attachments = create.querySelector("#attachments");
     let commentDialog = create.querySelector("#comment-dialog");
 
-    // swap visible elements
+    // get to actual note input
     placeholderArea.addEventListener('click', function() {
       placeholderArea.setAttribute("hidden", "");
+      let attachments = create.querySelector("#attachments");
       attachments.setAttribute("hidden", "");
       commentDialog.removeAttribute("hidden");
+      let textArea = commentDialog.querySelector("#textarea");
+      console.log(textArea);
     });
 
     setupNoteCreateDialog(commentDialog, observer);
@@ -198,6 +200,9 @@ function setupNoteCreateDialog(commentDialog, observer) {
     let mutation = mutations[0];
     let defaultText = commentDialog.querySelector("#placeholder"); //TODO add aria-label to iron-autogrow-textarea
     defaultText.innerHTML = "Add a private note...";
+
+    let avatar = commentDialog.querySelector("#author-thumbnail");
+    avatar.remove();
   });
   commentDialogObserver.observe(injectedCommentDialogRenderer, {childList: true});
 }
