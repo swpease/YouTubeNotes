@@ -149,7 +149,7 @@ function setupNoteHeader(header, observer) {
         let headerName = node.querySelector(".count-text");
         headerName.innerHTML = "Notes";
       } else if (node.id == "create") {
-        console.log(node);
+        // console.log(node);
         setupNoteCreate(node, observer);
       }
     }
@@ -170,8 +170,26 @@ function setupNoteCreate(create, observer) {
     let mutation = mutations[0];
     let defaultText = create.querySelector("yt-formatted-string");
     defaultText.innerHTML = "Add a private note...";
-  })
-  creatorObserver.observe(injectedNoteSimpleboxRenderer, {childList: true})
+
+    let commentDialog = create.querySelector("#comment-dialog");
+    setupNoteCreateDialog(commentDialog, observer);
+  });
+  creatorObserver.observe(injectedNoteSimpleboxRenderer, {childList: true});
+}
+
+function setupNoteCreateDialog(commentDialog, observer) {
+  observer.disconnect();
+
+  let commentDialogRenderer = makeHTML(commentDialogRenderer_raw);
+  commentDialog.appendChild(commentDialogRenderer);
+  let injectedCommentDialogRenderer = commentDialog.querySelector("ytd-comment-dialog-renderer");
+
+  var commentDialogObserver = new MutationObserver(function(mutations, observer) {
+    let mutation = mutations[0];
+    let defaultText = commentDialog.querySelector("#placeholder"); //TODO add aria-label to iron-autogrow-textarea
+    defaultText.innerHTML = "Add a private note...";
+  });
+  commentDialogObserver.observe(injectedCommentDialogRenderer, {childList: true});
 }
 
 

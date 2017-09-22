@@ -37,3 +37,82 @@ Created by ytd-comment-simplebox-renderer upon adding as child of #create:
     </div>
     <div id="comment-dialog" class="style-scope ytd-comment-simplebox-renderer" hidden=""></div>
   </ytd-comment-simplebox-renderer>
+
+  Created by ytd-comment-dialog-renderer upon adding to #comment-dialog:
+
+  <ytd-comment-dialog-renderer class="style-scope ytd-comment-simplebox-renderer">
+    <ytd-commentbox id="commentbox" class="style-scope ytd-comment-dialog-renderer" added-attachment="no attachment">
+    <yt-img-shadow id="author-thumbnail" class="style-scope ytd-commentbox no-transition"><img id="img" class="style-scope yt-img-shadow"></yt-img-shadow>
+    <div id="main" class="style-scope ytd-commentbox">
+      <div id="creation-box" class="not-focused style-scope ytd-commentbox">
+        <div id="poll-choice-text" class="style-scope ytd-commentbox">
+          <b class="style-scope ytd-commentbox"> </b>
+        </div>
+        <paper-input-container id="input-container" no-label-float="" class="style-scope ytd-commentbox">
+
+
+    <template is="dom-if" class="style-scope paper-input-container"></template>
+
+    <div class="input-content style-scope paper-input-container">
+
+
+      <div class="label-and-input-container style-scope paper-input-container" id="labelAndInputContainer">
+        <label id="placeholder" aria-hidden="true" slot="input" class="style-scope ytd-commentbox">
+
+          </label><iron-autogrow-textarea id="textarea" class="paper-input-input style-scope ytd-commentbox" maxlength="10000" required="true" slot="input" aria-disabled="false">
+
+
+
+
+    <div id="mirror" class="mirror-text style-scope iron-autogrow-textarea" aria-hidden="true">&nbsp;</div>
+
+
+    <div class="textarea-container fit style-scope iron-autogrow-textarea">
+      <textarea id="textarea" class="style-scope iron-autogrow-textarea" rows="1" autocomplete="off" required="" maxlength="10000"></textarea>
+    </div>
+  </iron-autogrow-textarea><div id="attachment-preview" slot="input" class="style-scope ytd-commentbox"></div><div id="reply-attachment-preview" slot="input" class="style-scope ytd-commentbox"></div><div id="image-select" class="paper-input-input style-scope ytd-commentbox" slot="input" hidden="">
+          </div><ytd-backstage-video-link-attachment id="video-link-attachment" slot="input" class="style-scope ytd-commentbox" hidden="">
+    <div id="video-preview" class="style-scope ytd-backstage-video-link-attachment"></div>
+    <div id="cancel-button" class="style-scope ytd-backstage-video-link-attachment"></div>
+  </ytd-backstage-video-link-attachment>
+      </div>
+
+
+    </div>
+
+    <div class="underline style-scope paper-input-container">
+      <div class="unfocused-line style-scope paper-input-container"></div>
+      <div class="focused-line style-scope paper-input-container"></div>
+    </div>
+
+    <div class="add-on-content style-scope paper-input-container">
+
+    </div>
+  </paper-input-container>
+      </div>
+      <ytd-poll-attachment id="poll-attachment" class="style-scope ytd-commentbox" hidden="">
+    <div id="poll-options" class="style-scope ytd-poll-attachment">
+      <template is="dom-repeat" id="repeat" class="style-scope ytd-poll-attachment"></template>
+    </div>
+    <div id="add-option" class="style-scope ytd-poll-attachment"></div>
+  </ytd-poll-attachment>
+      <div id="footer" class="style-scope ytd-commentbox">
+        <div id="attachments" class="style-scope ytd-commentbox">
+          <span id="video-link-button" class="style-scope ytd-commentbox"></span>
+          <span id="poll-button" class="style-scope ytd-commentbox"></span>
+          <span id="image-button" class="style-scope ytd-commentbox"></span>
+        </div>
+        <div id="footer-text" class="style-scope ytd-commentbox">
+          <yt-formatted-string id="footer-message" class="footer-alert-message style-scope ytd-commentbox" hidden=""></yt-formatted-string>
+          <yt-formatted-string id="zero-step-footer-text" class="style-scope ytd-commentbox"></yt-formatted-string>
+        </div>
+        <div id="access-restrictions-selector" class="style-scope ytd-commentbox"></div>
+        <div id="buttons" class="style-scope ytd-commentbox">
+          <ytd-button-renderer id="cancel-button" class="style-scope ytd-commentbox" button-renderer=""></ytd-button-renderer>
+          <ytd-button-renderer id="submit-button" class="style-scope ytd-commentbox" button-renderer=""></ytd-button-renderer>
+        </div>
+      </div>
+    </div>
+    <paper-spinner-lite class="style-scope ytd-commentbox" aria-hidden="true"><div id="spinnerContainer" class="  style-scope paper-spinner-lite"><div class="spinner-layer style-scope paper-spinner-lite"><div class="circle-clipper left style-scope paper-spinner-lite"></div><div class="circle-clipper right style-scope paper-spinner-lite"></div></div></div></paper-spinner-lite>
+  </ytd-commentbox>
+  </ytd-comment-dialog-renderer>
