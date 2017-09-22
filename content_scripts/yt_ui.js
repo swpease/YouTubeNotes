@@ -28,6 +28,8 @@ var noteInputWrapper_raw = '<ytd-comment-simplebox-renderer id="notes-input-wrap
 var noteInputDefault_raw = '<div class="style-scope ytd-comment-simplebox-renderer">' +
                            '<yt-formatted-string role="textbox" tabindex="0" class="style-scope ytd-comment-simplebox-renderer">Add a private note...</yt-formatted-string></div>';
 // The element displayed when you click to make a new note.
+var commentDialogRenderer_raw = '<ytd-comment-dialog-renderer class="style-scope ytd-comment-simplebox-renderer"></ytd-comment-dialog-renderer>'
+
 var noteInput_raw = '<div id="note-simplebox-create-note" class="style-scope ytd-comment-simplebox-renderer">' +
                     '<ytd-comment-dialog-renderer class="style-scope ytd-comment-simplebox-renderer">' +
                     '<ytd-commentbox class="style-scope ytd-comment-dialog-renderer" added-attachment="no attachment">' +
@@ -141,13 +143,14 @@ function setupNoteHeader(header, observer) {
 
   var headerObserver = new MutationObserver(function(mutations, observer) {
     let mutation = mutations[0];
-    console.log(mutation.addedNodes);
+    // console.log(mutation.addedNodes);
     for (let node of mutation.addedNodes) {
       if (node.id == "title") {
         let headerName = node.querySelector(".count-text");
         headerName.innerHTML = "Notes";
       } else if (node.id == "create") {
-        setupNoteCreate(note, observer);
+        console.log(node);
+        setupNoteCreate(node, observer);
       }
     }
     // let notePlaceholder = create.querySelector("yt-formatted-string");
@@ -163,13 +166,12 @@ function setupNoteCreate(create, observer) {
   create.appendChild(noteSimpleboxRenderer);
   let injectedNoteSimpleboxRenderer = create.querySelector("ytd-comment-simplebox-renderer");
 
-  var creatorObserver = new MutationObserver(function(mutations) {
+  var creatorObserver = new MutationObserver(function(mutations, observer) {
     let mutation = mutations[0];
-    console.log(mutation.addedNodes);
+    let defaultText = create.querySelector("yt-formatted-string");
+    defaultText.innerHTML = "Add a private note...";
   })
   creatorObserver.observe(injectedNoteSimpleboxRenderer, {childList: true})
-  // let notePlaceholder = create.querySelector("yt-formatted-string");
-  // notePlaceholder.innerHTML = "Add a private note...";
 }
 
 
