@@ -1,0 +1,39 @@
+Created by ytd-comments:
+
+<ytd-comments id="notes-wrapper" class="style-scope ytd-watch">
+    <ytd-item-section-renderer initial-count="2" class="style-scope ytd-comments">
+    <div id="header" class="style-scope ytd-item-section-renderer"></div>
+    <paper-spinner-lite class="style-scope ytd-item-section-renderer" aria-hidden="true"><div id="spinnerContainer" class="  style-scope paper-spinner-lite"><div class="spinner-layer style-scope paper-spinner-lite"><div class="circle-clipper left style-scope paper-spinner-lite"></div><div class="circle-clipper right style-scope paper-spinner-lite"></div></div></div></paper-spinner-lite>
+    <div id="contents" class="style-scope ytd-item-section-renderer"></div>
+    <div id="continuations" class="style-scope ytd-item-section-renderer"></div>
+  </ytd-item-section-renderer>
+</ytd-comments>
+
+Created by ytd-comments-header-renderer upon adding as child of #header:
+
+<ytd-comments-header-renderer class="style-scope ytd-item-section-renderer">
+    <div id="title" class="style-scope ytd-comments-header-renderer">
+      <h2 id="count" class="style-scope ytd-comments-header-renderer">
+        <yt-formatted-string class="count-text style-scope ytd-comments-header-renderer"></yt-formatted-string>
+      </h2>
+      <span id="sort-menu" class="style-scope ytd-comments-header-renderer"></span>
+    </div>
+    <div id="alert" class="style-scope ytd-comments-header-renderer"></div>
+    <div id="create" class="style-scope ytd-comments-header-renderer"></div>
+    <div id="cluster-chip-list" class="style-scope ytd-comments-header-renderer"></div>
+    <div id="highlighted-comments" class="style-scope ytd-comments-header-renderer"></div>
+    <div id="zero-state-message" class="style-scope ytd-comments-header-renderer"></div>
+</ytd-comments-header-renderer>
+
+Created by ytd-comment-simplebox-renderer upon adding as child of #create:
+
+<ytd-comment-simplebox-renderer id="notes-input-wrapper" class="style-scope ytd-comments-header-renderer">
+    <yt-img-shadow id="author-thumbnail" height="40" width="40" class="style-scope ytd-comment-simplebox-renderer no-transition"><img id="img" class="style-scope yt-img-shadow" width="40" height="40"></yt-img-shadow>
+    <div id="placeholder-area" class="style-scope ytd-comment-simplebox-renderer">
+      <yt-formatted-string id="simplebox-placeholder" role="textbox" tabindex="0" class="style-scope ytd-comment-simplebox-renderer"></yt-formatted-string>
+    </div>
+    <div id="attachments" class="style-scope ytd-comment-simplebox-renderer">
+      <div id="image-button" class="style-scope ytd-comment-simplebox-renderer"></div>
+    </div>
+    <div id="comment-dialog" class="style-scope ytd-comment-simplebox-renderer" hidden=""></div>
+  </ytd-comment-simplebox-renderer>
