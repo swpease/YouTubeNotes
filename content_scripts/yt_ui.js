@@ -153,12 +153,11 @@ function setupNoteHeader(header, observer) {
         setupNoteCreate(node, observer);
       }
     }
-    // let notePlaceholder = create.querySelector("yt-formatted-string");
-    // notePlaceholder.innerHTML = "Add a private note...";
   });
   headerObserver.observe(injectedHeaderRenderer, {childList: true});
 }
 
+// Contents of #create
 function setupNoteCreate(create, observer) {
   observer.disconnect();
 
@@ -168,10 +167,21 @@ function setupNoteCreate(create, observer) {
 
   var creatorObserver = new MutationObserver(function(mutations, observer) {
     let mutation = mutations[0];
+    // format the default view (#placeholder-area)
     let defaultText = create.querySelector("yt-formatted-string");
     defaultText.innerHTML = "Add a private note...";
 
+    let placeholderArea = create.querySelector("#placeholder-area");
+    let attachments = create.querySelector("#attachments");
     let commentDialog = create.querySelector("#comment-dialog");
+
+    // swap visible elements
+    placeholderArea.addEventListener('click', function() {
+      placeholderArea.setAttribute("hidden", "");
+      attachments.setAttribute("hidden", "");
+      commentDialog.removeAttribute("hidden");
+    });
+
     setupNoteCreateDialog(commentDialog, observer);
   });
   creatorObserver.observe(injectedNoteSimpleboxRenderer, {childList: true});
