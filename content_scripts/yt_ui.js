@@ -30,6 +30,13 @@ var noteInputDefault_raw = '<div class="style-scope ytd-comment-simplebox-render
 // The element displayed when you click to make a new note.
 var commentDialogRenderer_raw = '<ytd-comment-dialog-renderer class="style-scope ytd-comment-simplebox-renderer"></ytd-comment-dialog-renderer>'
 
+var cancelBtnContents_raw = '<a is="yt-endpoint" tabindex="-1" class="style-scope ytd-button-renderer">' +
+                            '<paper-button role="button" tabindex="0" animated="" aria-disabled="false" elevation="0" id="button" class="style-scope ytd-button-renderer">' +
+                            '<span id="text" class="style-scope ytd-button-renderer">Cancel</span>' +
+                            '<paper-ripple class="style-scope paper-button">' +
+                            '<div id="background" class="style-scope paper-ripple" style="opacity: 0;"></div><div id="waves" class="style-scope paper-ripple"></div>' +
+                            '</paper-ripple></paper-button></a>';
+
 var submitBtnContents_raw = '<a is="yt-endpoint" tabindex="-1" class="style-scope ytd-button-renderer">' +
                             '<paper-button role="button" tabindex="-1" animated="" aria-disabled="true" elevation="0" id="button" class="style-scope ytd-button-renderer style-primary" aria-label="Note" style="pointer-events: none;" disabled="">' +
                             '<span id="text" class="style-scope ytd-button-renderer style-primary">Note</span>' +
@@ -201,6 +208,7 @@ function setupNoteCreate(create, observer) {
   creatorObserver.observe(injectedNoteSimpleboxRenderer, {childList: true});
 }
 
+// The UI that pops up when you click to Add a private note...
 function setupNoteCreateDialog(commentDialog, observer) {
   observer.disconnect();
 
@@ -217,6 +225,7 @@ function setupNoteCreateDialog(commentDialog, observer) {
     avatar.remove();
 
     let btnWrapper = commentDialog.querySelector("#buttons");
+    // Move to next fn if possible
     let btns = btnWrapper.querySelectorAll("ytd-button-renderer");
     for (let btn of btns) {
       btn.setAttribute("is-paper-button", "");
@@ -228,6 +237,10 @@ function setupNoteCreateDialog(commentDialog, observer) {
 
 function setupCreateNoteButtons(btnWrapper, observer) {
   observer.disconnect();
+
+  let cancelBtnContents = makeHTML(cancelBtnContents_raw);
+  let cancelBtn = btnWrapper.querySelector('#cancel-button');
+  cancelBtn.appendChild(cancelBtnContents);
 
   let submitBtnContents = makeHTML(submitBtnContents_raw);
   let submitBtn = btnWrapper.querySelector('#submit-button');
