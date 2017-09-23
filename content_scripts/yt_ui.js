@@ -30,6 +30,11 @@ var noteInputDefault_raw = '<div class="style-scope ytd-comment-simplebox-render
 // The element displayed when you click to make a new note.
 var commentDialogRenderer_raw = '<ytd-comment-dialog-renderer class="style-scope ytd-comment-simplebox-renderer"></ytd-comment-dialog-renderer>'
 
+var submitBtnContents_raw = '<a is="yt-endpoint" tabindex="-1" class="style-scope ytd-button-renderer">' +
+                            '<paper-button role="button" tabindex="-1" animated="" aria-disabled="true" elevation="0" id="button" class="style-scope ytd-button-renderer style-primary" aria-label="Note" style="pointer-events: none;" disabled="">' +
+                            '<span id="text" class="style-scope ytd-button-renderer style-primary">Note</span>' +
+                            '</paper-button></a>';
+
 var noteInput_raw = '<div id="note-simplebox-create-note" class="style-scope ytd-comment-simplebox-renderer">' +
                     '<ytd-comment-dialog-renderer class="style-scope ytd-comment-simplebox-renderer">' +
                     '<ytd-commentbox class="style-scope ytd-comment-dialog-renderer" added-attachment="no attachment">' +
@@ -174,14 +179,21 @@ function setupNoteCreate(create, observer) {
     let placeholderArea = create.querySelector("#placeholder-area");
     let commentDialog = create.querySelector("#comment-dialog");
 
-    // get to actual note input
+    /* get to actual note input
+     *
+     */
     placeholderArea.addEventListener('click', function() {
       placeholderArea.setAttribute("hidden", "");
       let attachments = create.querySelector("#attachments");
       attachments.setAttribute("hidden", "");
       commentDialog.removeAttribute("hidden");
+      // Focus on text area.
+      // let creationBox = commentDialog.querySelector("#creation-box");
+      // creationBox.classList.remove("not-focused");
+      // creationBox.classList.add("focused");
       let textArea = commentDialog.querySelector("#textarea");
-      console.log(textArea);
+      $(textArea).click();
+      // textArea.setAttribute("focused", "");
     });
 
     setupNoteCreateDialog(commentDialog, observer);
@@ -203,8 +215,25 @@ function setupNoteCreateDialog(commentDialog, observer) {
 
     let avatar = commentDialog.querySelector("#author-thumbnail");
     avatar.remove();
+
+    let btnWrapper = commentDialog.querySelector("#buttons");
+    let btns = btnWrapper.querySelectorAll("ytd-button-renderer");
+    for (let btn of btns) {
+      btn.setAttribute("is-paper-button", "");
+    }
+    setupCreateNoteButtons(btnWrapper, observer);
   });
   commentDialogObserver.observe(injectedCommentDialogRenderer, {childList: true});
+}
+
+function setupCreateNoteButtons(btnWrapper, observer) {
+  observer.disconnect();
+
+  let submitBtnContents = makeHTML(submitBtnContents_raw);
+  let submitBtn = btnWrapper.querySelector('#submit-button');
+  submitBtn.classList.add("style-primary");
+  submitBtn.setAttribute("disabled", "");
+  submitBtn.appendChild(submitBtnContents);
 }
 
 
