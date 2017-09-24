@@ -249,6 +249,7 @@ function setupCreateNoteButtons(btnWrapper, observer) {
   submitBtn.appendChild(submitBtnContents);
 
   cancelBtn.addEventListener('click', revertToDefaultView);
+  submitBtn.addEventListener('click', makeNote);
 }
 
 /* Changes the view from the editable note creation section to just
@@ -262,6 +263,42 @@ function revertToDefaultView() {
   commentDialog.setAttribute("hidden", "");
   placeholderArea.removeAttribute("hidden");
   attachments.removeAttribute("hidden");
+}
+
+function makeNote() {
+  let notesSection = document.querySelector("#notes-wrapper");
+  let textMirror = notesSection.querySelector("#mirror");
+
+  var ytVideo = document.querySelector('.html5-main-video');
+  var noteTime = ytVideo.currentTime; //Don't format until after storage. Could still accidentally overwrite, but highly unlikely.
+  var noteText = textMirror.innerHTML.substring(0, textMirror.innerHTML.length - 6); // Removes trailing %nbsp;
+
+  var gettingItem = browser.storage.local.get(videoId);
+  gettingItem.then((result) => {
+    if (Array.isArray(result)) {  // If Firefox version less than 52.
+      result = result[0];
+    }
+    var objTest = Object.keys(result);
+
+    if(!objTest.includes(videoId)) {
+      var storingNote = browser.storage.local.set({ [videoId] : { "title" : videoTitle,
+                                                                  "notes" : { [noteTime] : noteText }
+                                                                }
+                                                  });
+      storingNote.then(() => {
+        // displayNote(noteTime, noteText);
+        revertToDefaultView();
+      });
+    } else {
+      var currentNotes = result[videoId]["notes"];  // Object
+      currentNotes[[noteTime]] = noteText;
+      var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
+      storingNote.then(() => {
+        // displayNote(noteTime, noteText);
+        revertToDefaultView();
+      });
+    }
+  });
 }
 
   // var noteHeaderWrapperRenderer = makeHTML(noteHeaderWrapperRenderer_raw);
@@ -326,38 +363,38 @@ function switchToNoteInputDefault(notesBox, noteInputWrapper, note, noteInput, n
  * @param {Element} note: Contains the note to save.
  * @param {Element} the other four: just here to be passed to subsequent fn's.
  */
-function makeNote(notesBox, noteInputWrapper, note, noteInput, noteInputDefault) {
-  var ytVideo = document.querySelector('.html5-main-video');
-  var noteTime = ytVideo.currentTime; //Don't format until after storage. Could still accidentally overwrite, but highly unlikely.
-  var noteText = note.innerHTML;
-
-  var gettingItem = browser.storage.local.get(videoId);
-  gettingItem.then((result) => {
-    if (Array.isArray(result)) {  // If Firefox version less than 52.
-      result = result[0];
-    }
-    var objTest = Object.keys(result);
-
-    if(!objTest.includes(videoId)) {
-      var storingNote = browser.storage.local.set({ [videoId] : { "title" : videoTitle,
-                                                                  "notes" : { [noteTime] : noteText }
-                                                                }
-                                                  });
-      storingNote.then(() => {
-        displayNote(noteTime, noteText);
-        switchToNoteInputDefault(notesBox, noteInputWrapper, note, noteInput, noteInputDefault);
-      });
-    } else {
-      var currentNotes = result[videoId]["notes"];  // Object
-      currentNotes[[noteTime]] = noteText;
-      var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
-      storingNote.then(() => {
-        displayNote(noteTime, noteText);
-        switchToNoteInputDefault(notesBox, noteInputWrapper, note, noteInput, noteInputDefault);
-      });
-    }
-  });
-}
+// function makeNote(notesBox, noteInputWrapper, note, noteInput, noteInputDefault) {
+//   var ytVideo = document.querySelector('.html5-main-video');
+//   var noteTime = ytVideo.currentTime; //Don't format until after storage. Could still accidentally overwrite, but highly unlikely.
+//   var noteText = note.innerHTML;
+//
+//   var gettingItem = browser.storage.local.get(videoId);
+//   gettingItem.then((result) => {
+//     if (Array.isArray(result)) {  // If Firefox version less than 52.
+//       result = result[0];
+//     }
+//     var objTest = Object.keys(result);
+//
+//     if(!objTest.includes(videoId)) {
+//       var storingNote = browser.storage.local.set({ [videoId] : { "title" : videoTitle,
+//                                                                   "notes" : { [noteTime] : noteText }
+//                                                                 }
+//                                                   });
+//       storingNote.then(() => {
+//         displayNote(noteTime, noteText);
+//         switchToNoteInputDefault(notesBox, noteInputWrapper, note, noteInput, noteInputDefault);
+//       });
+//     } else {
+//       var currentNotes = result[videoId]["notes"];  // Object
+//       currentNotes[[noteTime]] = noteText;
+//       var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
+//       storingNote.then(() => {
+//         displayNote(noteTime, noteText);
+//         switchToNoteInputDefault(notesBox, noteInputWrapper, note, noteInput, noteInputDefault);
+//       });
+//     }
+//   });
+// }
 
 
 // Dispalying saved notes:
@@ -594,7 +631,7 @@ function main() {
     // inject UI onto page
     // var detailsSection = document.querySelector("#meta");
     // detailsSection.parentElement.insertBefore(notesSection, detailsSection.nextSibling);
-    console.log("finished");
+    // console.log("finished");
     // setup existing notes.
     // setupExistingNotes();
   }
