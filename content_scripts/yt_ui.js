@@ -247,6 +247,17 @@ function setupCreateNoteButtons(btnWrapper, observer) {
   submitBtn.classList.add("style-primary");
   submitBtn.setAttribute("disabled", "");
   submitBtn.appendChild(submitBtnContents);
+  // Need to fix cursor:
+  // let submitBtnObserver = new MutationObserver(function (mutations) {
+  //   if (!submitBtn.hasAttribute("disabled")) {
+  //     let paperBtn = submitBtn.querySelector("#button");
+  //     paperBtn.removeAttribute("aria-disabled");
+  //     paperBtn.removeAttribute("disabled");
+  //     paperBtn.removeAttribute("style");
+  //     paperBtn.setAttribute("tabindex", 0);
+  //   }
+  // })
+  // submitBtnObserver.observe(submitBtn, {attributes: true});
 
   cancelBtn.addEventListener('click', revertToDefaultView);
   submitBtn.addEventListener('click', makeNote);
@@ -287,7 +298,9 @@ function makeNote() {
                                                   });
       storingNote.then(() => {
         // displayNote(noteTime, noteText);
-        revertToDefaultView();
+        // Not sure why this works but calling revertToDefaultView doesnt...
+        let cancelBtn = notesSection.querySelector("ytd-button-renderer#cancel-button");
+        cancelBtn.click();
       });
     } else {
       var currentNotes = result[videoId]["notes"];  // Object
@@ -295,7 +308,8 @@ function makeNote() {
       var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
       storingNote.then(() => {
         // displayNote(noteTime, noteText);
-        revertToDefaultView();
+        let cancelBtn = notesSection.querySelector("ytd-button-renderer#cancel-button");
+        cancelBtn.click();
       });
     }
   });
