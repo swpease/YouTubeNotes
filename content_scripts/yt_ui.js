@@ -248,17 +248,21 @@ function setupCreateNoteButtons(btnWrapper, observer) {
   submitBtn.setAttribute("disabled", "");
   submitBtn.appendChild(submitBtnContents);
 
-  cancelBtn.addEventListener('click', function() {
-    let notesSection = document.querySelector("#notes-wrapper");
-    let placeholderArea = notesSection.querySelector("#placeholder-area");
-    let attachments = notesSection.querySelector("#attachments");
-    let commentDialog = notesSection.querySelector("#comment-dialog");
-    commentDialog.setAttribute("hidden", "");
-    placeholderArea.removeAttribute("hidden");
-    attachments.removeAttribute("hidden");
-  })
+  cancelBtn.addEventListener('click', revertToDefaultView);
 }
 
+/* Changes the view from the editable note creation section to just
+ * the default view that you click on to switch to the editable version.
+ */
+function revertToDefaultView() {
+  let notesSection = document.querySelector("#notes-wrapper");
+  let placeholderArea = notesSection.querySelector("#placeholder-area");
+  let attachments = notesSection.querySelector("#attachments");
+  let commentDialog = notesSection.querySelector("#comment-dialog");
+  commentDialog.setAttribute("hidden", "");
+  placeholderArea.removeAttribute("hidden");
+  attachments.removeAttribute("hidden");
+}
 
   // var noteHeaderWrapperRenderer = makeHTML(noteHeaderWrapperRenderer_raw);
   // var notesSectionTitle = makeHTML(notesSectionTitle_raw);
