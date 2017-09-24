@@ -247,6 +247,16 @@ function setupCreateNoteButtons(btnWrapper, observer) {
   submitBtn.classList.add("style-primary");
   submitBtn.setAttribute("disabled", "");
   submitBtn.appendChild(submitBtnContents);
+
+  cancelBtn.addEventListener('click', function() {
+    let notesSection = document.querySelector("#notes-wrapper");
+    let placeholderArea = notesSection.querySelector("#placeholder-area");
+    let attachments = notesSection.querySelector("#attachments");
+    let commentDialog = notesSection.querySelector("#comment-dialog");
+    commentDialog.setAttribute("hidden", "");
+    placeholderArea.removeAttribute("hidden");
+    attachments.removeAttribute("hidden");
+  })
 }
 
 
