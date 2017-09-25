@@ -116,3 +116,95 @@ Created by ytd-comment-simplebox-renderer upon adding as child of #create:
     <paper-spinner-lite class="style-scope ytd-commentbox" aria-hidden="true"><div id="spinnerContainer" class="  style-scope paper-spinner-lite"><div class="spinner-layer style-scope paper-spinner-lite"><div class="circle-clipper left style-scope paper-spinner-lite"></div><div class="circle-clipper right style-scope paper-spinner-lite"></div></div></div></paper-spinner-lite>
   </ytd-commentbox>
   </ytd-comment-dialog-renderer>
+
+
+Created by ytd-comment-thread-renderer upon adding to #contents:
+
+<ytd-comment-thread-renderer class="style-scope ytd-item-section-renderer">
+    <ytd-comment-renderer id="comment" class="style-scope ytd-comment-thread-renderer">
+    <div id="body" class="style-scope ytd-comment-renderer">
+      <div id="author-thumbnail" class="style-scope ytd-comment-renderer">
+        <a class="yt-simple-endpoint style-scope ytd-comment-renderer">
+          <yt-img-shadow fit="" height="40" width="40" class="style-scope ytd-comment-renderer no-transition"><img id="img" class="style-scope yt-img-shadow" width="40" height="40"></yt-img-shadow>
+        </a>
+      </div>
+      <div id="author-thumbnails" class="style-scope ytd-comment-renderer"></div>
+      <div id="main" class="style-scope ytd-comment-renderer">
+        <div id="header" class="style-scope ytd-comment-renderer">
+          <div id="header-badge" class="style-scope ytd-comment-renderer">
+            <div id="linked-comment-badge" class="style-scope ytd-comment-renderer"></div>
+            <div id="pinned-comment-badge" class="style-scope ytd-comment-renderer"></div>
+          </div>
+
+          <div id="header-author" class="style-scope ytd-comment-renderer">
+            <a id="author-text" class="yt-simple-endpoint style-scope ytd-comment-renderer">
+              <span class="style-scope ytd-comment-renderer">
+
+              </span>
+            </a>
+            <span id="author-comment-badge" class="style-scope ytd-comment-renderer"></span>
+            <span id="sponsor-comment-badge" class="style-scope ytd-comment-renderer"></span>
+            <yt-formatted-string id="published-time-text" class="style-scope ytd-comment-renderer"></yt-formatted-string>
+            <span id="sponsors-only-badge" class="style-scope ytd-comment-renderer"></span>
+
+            <span id="moderation-reason-divider" class="style-scope ytd-comment-renderer">
+              •
+            </span>
+            <span id="moderation-reason-text" class="style-scope ytd-comment-renderer">
+
+            </span>
+          </div>
+        </div>
+
+
+        <ytd-expander id="expander" class="style-scope ytd-comment-renderer" collapsed="" style="--ytd-expander-collapsed-height:80px;">
+    <div id="content" class="style-scope ytd-expander">
+      <yt-formatted-string id="voted-option" tabindex="0" class="style-scope ytd-comment-renderer" disable-upgrade="">
+          </yt-formatted-string><yt-formatted-string id="content-text" split-lines="" tabindex="0" class="style-scope ytd-comment-renderer"></yt-formatted-string>
+    </div>
+
+    <paper-button id="less" aria-expanded="true" noink="" class="style-scope ytd-expander" role="button" tabindex="0" animated="" aria-disabled="false" elevation="0" hidden="">
+      <span class="less-button style-scope ytd-comment-renderer"> </span>
+    </paper-button>
+    <paper-button id="more" aria-expanded="false" noink="" class="style-scope ytd-expander" role="button" tabindex="0" animated="" aria-disabled="false" elevation="0" hidden="">
+      <span class="more-button style-scope ytd-comment-renderer"> </span>
+    </paper-button>
+  </ytd-expander>
+        <h1 id="highlighted-text" class="style-scope ytd-comment-renderer">
+
+        </h1>
+        <div id="content-attachment" class="style-scope ytd-comment-renderer"></div>
+        <ytd-backstage-poll-renderer id="poll-attachment" role="group" class="style-scope ytd-comment-renderer" disable-upgrade="">
+        </ytd-backstage-poll-renderer>
+        <ytd-comment-action-buttons-renderer id="action-buttons" class="style-scope ytd-comment-renderer">
+    <div id="toolbar" class="style-scope ytd-comment-action-buttons-renderer">
+      <ytd-button-renderer id="reply-button" align-by-text="" class="style-scope ytd-comment-action-buttons-renderer" button-renderer=""></ytd-button-renderer>
+      <span id="vote-count" class="style-scope ytd-comment-action-buttons-renderer">
+
+      </span>
+      <ytd-toggle-button-renderer id="like-button" class="style-scope ytd-comment-action-buttons-renderer" button-renderer="">
+
+
+
+  </ytd-toggle-button-renderer>
+      <ytd-toggle-button-renderer id="dislike-button" class="style-scope ytd-comment-action-buttons-renderer" button-renderer="">
+
+
+
+  </ytd-toggle-button-renderer>
+      <div id="creator-heart" class="style-scope ytd-comment-action-buttons-renderer"></div>
+    </div>
+    <div id="reply-dialog" class="style-scope ytd-comment-action-buttons-renderer"></div>
+  </ytd-comment-action-buttons-renderer>
+        <div id="detail-view-button" class="style-scope ytd-comment-renderer"></div>
+        <div id="moderation-buttons" class="style-scope ytd-comment-renderer"></div>
+      </div>
+
+      <div id="action-menu" class="style-scope ytd-comment-renderer"></div>
+    </div>
+    <div id="edit-dialog" class="style-scope ytd-comment-renderer" hidden=""></div>
+    <div id="creator-reply" class="style-scope ytd-comment-renderer"></div>
+  </ytd-comment-renderer>
+    <div id="moderation-panel" class="style-scope ytd-comment-thread-renderer"></div>
+    <div id="replies" class="style-scope ytd-comment-thread-renderer"></div>
+  </ytd-comment-thread-renderer>

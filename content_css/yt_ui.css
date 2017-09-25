@@ -1,3 +1,7 @@
+#notes-wrapper #comment #like-button:not(:hover) {
+  color: inherit;
+}
+
 .notes-footer-item {
   color: #555;
   opacity: 0.5;
