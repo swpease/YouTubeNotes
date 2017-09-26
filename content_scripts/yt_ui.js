@@ -392,8 +392,7 @@ function newDisplayNote(noteTime, noteText) {
 
   let noteThreadRenderer = makeHTML(noteThreadRenderer_raw);
   contents.appendChild(noteThreadRenderer);
-  // TODO... get the correct note when there are multiple
-  let injectedNoteThreadRenderer = contents.firstChild;
+  let injectedNoteThreadRenderer = contents.querySelector("ytd-comment-thread-renderer:not([data-note-time])");
 
   let noteThreadObserver = new MutationObserver(function(mutations, observer) {
     // Add note time
@@ -435,7 +434,7 @@ function setupSavedNoteButtons(note) {
 
   // Functionality
   let noteTime = note.dataset.noteTime;
-  
+
   // Delete Note
   deleteBtn.addEventListener('click', function () {
     var gettingItem = browser.storage.local.get(videoId);
