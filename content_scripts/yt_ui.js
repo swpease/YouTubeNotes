@@ -45,6 +45,15 @@ var deleteNoteBtnContents_raw = '<a is="yt-endpoint" tabindex="-1" class="style-
                                 '<paper-button role="button" tabindex="0" animated="" aria-disabled="false" elevation="0" id="button" class="style-scope ytd-button-renderer style-text">' +
                                 '<span id="text" class="style-scope ytd-button-renderer style-text">Delete</span>' +
                                 '</paper-button></a>';
+// Inject at #edit-dialog when user clicks to edit a note.
+var editCommentDialogRenderer_raw = '<ytd-comment-dialog-renderer class="style-scope ytd-comment-renderer"></ytd-comment-dialog-renderer>';
+
+var editNoteSaveBtn_raw = '<a is="yt-endpoint" tabindex="-1" class="style-scope ytd-button-renderer">' +
+                          '<paper-button role="button" tabindex="-1" animated="" aria-disabled="true" elevation="0" id="button" class="style-scope ytd-button-renderer" style="pointer-events: none;" disabled="">' +
+                          '<yt-formatted-string id="text" class="style-scope ytd-button-renderer">Save</yt-formatted-string>' +
+                          '<paper-ripple class="style-scope paper-button">' +
+                          '<div id="background" class="style-scope paper-ripple" style="opacity: 0;"></div><div id="waves" class="style-scope paper-ripple"></div>' +
+                          '</paper-ripple></paper-button></a>';
 
 // var noteInput_raw = '<div id="note-simplebox-create-note" class="comment-simplebox-content"><div class="comment-simplebox" id="note-simplebox"><div class="comment-simplebox-arrow"><div class="arrow-inner"></div><div class="arrow-outer"></div></div>' +
 //                     '<div class="comment-simplebox-frame"><div class="comment-simplebox-prompt"></div><div class="comment-simplebox-text" role="textbox" aria-multiline="true" contenteditable="true" data-placeholder="Add a private note..."></div></div>' +
@@ -409,7 +418,7 @@ function newDisplayNote(noteTime, noteText) {
     noteTextElement.innerHTML = noteText;
     content.replaceChild(noteTextElement, oldNoteTextElement);
     // Setup btns:
-    setupSavedNoteButtons(injectedNoteThreadRenderer);
+    setupSavedNoteButtons(injectedNoteThreadRenderer, observer);
   });
   noteThreadObserver.observe(injectedNoteThreadRenderer, {childList: true});
 
@@ -417,10 +426,12 @@ function newDisplayNote(noteTime, noteText) {
 /*******SHOULD I BE PUTTING THE OBSERVERS BEFORE THE INJECTEDELEMENT RETRIEVALS?********/
 
 /*
- * Sets up the note's buttons.
- * @param {Element} note: A single "note" unit.
+ * Sets up the note's buttons: [Edit] and [Delete]
+ * @param {Element} note: A single "note" unit: ytd-comment-thread-renderer
+ * @param {MutationObserver} observer: The observer that triggered this fn. To disconnect.
  */
-function setupSavedNoteButtons(note) {
+function setupSavedNoteButtons(note, observer) {
+  observer.disconnect();
   // Create btns
   let editBtn = note.querySelector("#reply-button");
   editBtn.setAttribute("is-paper-button", "");
@@ -437,6 +448,23 @@ function setupSavedNoteButtons(note) {
 
   // Functionality
   let noteTime = note.dataset.noteTime;
+
+  // Edit Note
+  editBtn.addEventListener('click', function () {
+    let body = note.querySelector("#body"); // The regular view.
+    let editDialog = note.querySelector("#edit-dialog");
+    let editDialogContents = makeHTML(editCommentDialogRenderer_raw);
+    editDialog.appendChild(editDialogContents);
+    body.setAttribute("hidden", "");
+    editDialog.removeAttribute("hidden");
+    let injectedEditDialogContents = editDialog.firstChild;
+
+    var editDialogObserver = new MutationObserver(function(mutations, observer) {
+      setupEditNoteButtons(body, editDialog, observer);
+    });
+    editDialogObserver.observe(injectedEditDialogContents, {childList: true});
+
+  })
 
   // Delete Note
   deleteBtn.addEventListener('click', function () {
@@ -461,6 +489,34 @@ function setupSavedNoteButtons(note) {
   });
 
 }
+
+/* The [Cancel] and [Save] buttons that are below the edit widget for a note.
+ * @param {Element} body: Default view. To switch with editDialog upon btn click.
+ * @param {Element} editDialog: Edit view.
+ * @param {MutationObserver} observer: To disconnect.
+ */
+function setupEditNoteButtons(body, editDialog, observer) {
+  observer.disconnect();
+
+  let buttons = editDialog.querySelector("#footer #buttons");
+  let cancelBtn = buttons.querySelector("#cancel-button");
+  let submitBtn = buttons.querySelector("#submit-button");
+  let cancelBtnContents = makeHTML(cancelBtnContents_raw);
+  let submitBtnContents = makeHTML(submitBtnContents_raw);
+
+  cancelBtn.appendChild(cancelBtnContents);
+  submitBtn.appendChild(submitBtnContents);
+
+  cancelBtn.setAttribute("is-paper-button", "");
+  submitBtn.setAttribute("is-paper-button", "");
+
+  cancelBtn.addEventListener('click', function () {
+    editDialog.setAttribute("hidden", "");
+    body.removeAttribute("hidden");
+    editDialog.firstChild.remove();
+  })
+}
+
 
 function displayNote(noteTime, noteText) {
   var noteRendererWrapper = makeHTML(noteRendererWrapper_raw);
