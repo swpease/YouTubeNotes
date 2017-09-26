@@ -399,7 +399,8 @@ function newDisplayNote(noteTime, noteText) {
     // Add note time
     let displayedNoteTime = injectedNoteThreadRenderer.querySelector("#author-text span");
     displayedNoteTime.innerHTML = prettifyTime(noteTime);
-    displayedNoteTime.setAttribute('data-note-time', noteTime);
+    injectedNoteThreadRenderer.setAttribute('data-note-time', noteTime);
+    // displayedNoteTime.setAttribute('data-note-time', noteTime); // put in injectedNoteThreadRenderer?
     // Add note text
     let content = injectedNoteThreadRenderer.querySelector("#content");
     let oldNoteTextElement = content.querySelector("#content-text");
@@ -413,23 +414,50 @@ function newDisplayNote(noteTime, noteText) {
 
 }
 
+/*
+ * Sets up the note's buttons.
+ * @param {Element} note: A single "note" unit.
+ */
 function setupSavedNoteButtons(note) {
+  // Create btns
   let editBtn = note.querySelector("#reply-button");
   editBtn.setAttribute("is-paper-button", "");
   let editNoteBtnContents = makeHTML(editNoteBtnContents_raw);
   editBtn.appendChild(editNoteBtnContents);
 
-  // let deleteBtn = makeHTML(deleteNoteBtn_raw);
   let btnContainer = note.querySelector("#toolbar");
-  let likeBtn = btnContainer.querySelector("#like-button"); // To turn into a delete button.
+  let deleteBtn = btnContainer.querySelector("#like-button"); // To turn into a delete button.
   let deleteNoteBtnContents = makeHTML(deleteNoteBtnContents_raw);
-  likeBtn.appendChild(deleteNoteBtnContents);
+  deleteBtn.appendChild(deleteNoteBtnContents);
 
   let voteCount = btnContainer.querySelector("#vote-count");
   voteCount.remove();
-  // btnContainer.replaceChild(deleteBtn, replaceableNode);
-  // let injectedDeleteBtn = btnContainer.querySelector("#delete-button");
-  // injectedDeleteBtn.appendChild(makeHTML(editNoteBtnContents_raw));
+
+  // Functionality
+  let noteTime = note.dataset.noteTime;
+  
+  // Delete Note
+  deleteBtn.addEventListener('click', function () {
+    var gettingItem = browser.storage.local.get(videoId);
+    gettingItem.then((result) => {
+      if (Array.isArray(result)) {  // If Firefox version less than 52.
+        result = result[0];
+      }
+
+      var currentNotes = result[videoId]["notes"];  // Object
+      delete currentNotes[[noteTime]];
+      if (Object.keys(currentNotes).length == 0) {
+        browser.storage.local.remove(videoId);
+        note.remove();
+      } else {
+        var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
+        storingNote.then(() => {
+          note.remove();
+        });
+      }
+    });
+  });
+
 }
 
 function displayNote(noteTime, noteText) {
