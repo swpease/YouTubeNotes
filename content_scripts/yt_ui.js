@@ -346,20 +346,21 @@ function prettifyTime(time) {
 }
 
 /* Called by displayNote so that you know they are displayed in order by time.
- * @param {Element} note: a noteRendererWrapper
+ * @param {Element} contents: #contents. Contains all of the saved notes.
+ * @param {Element} note: a noteThreadRenderer
  */
-function insertByTime(note) {
-  var displayedNotes = savedNotesWrapper.getElementsByClassName('note-renderer');
+function insertByTime(contents, note) {
+  var displayedNotes = contents.querySelectorAll("ytd-comment-thread-renderer");
 
   if (displayedNotes.length > 0) {
     for (var displayedNote of displayedNotes) {
       if (Number(note.dataset.noteTime) < Number(displayedNote.dataset.noteTime)) {
-        savedNotesWrapper.insertBefore(note, displayedNote);
+        contents.insertBefore(note, displayedNote);
         return;
       }
     }
   }
-  savedNotesWrapper.appendChild(note);
+  contents.appendChild(note);
 }
 
 //source: http://stackoverflow.com/questions/4233265/contenteditable-set-caret-at-the-end-of-the-text-cross-browser
@@ -391,14 +392,15 @@ function newDisplayNote(noteTime, noteText) {
   let contents = document.querySelector("#notes-wrapper #contents");
 
   let noteThreadRenderer = makeHTML(noteThreadRenderer_raw);
-  contents.appendChild(noteThreadRenderer);
-  let injectedNoteThreadRenderer = contents.querySelector("ytd-comment-thread-renderer:not([data-note-time])");
+  noteThreadRenderer.setAttribute('data-note-time', noteTime);
+  insertByTime(contents, noteThreadRenderer);
+  let injectedNoteThreadRenderer = contents.querySelector('ytd-comment-thread-renderer[data-note-time="' + noteTime + '"]');
 
   let noteThreadObserver = new MutationObserver(function(mutations, observer) {
     // Add note time
     let displayedNoteTime = injectedNoteThreadRenderer.querySelector("#author-text span");
     displayedNoteTime.innerHTML = prettifyTime(noteTime);
-    injectedNoteThreadRenderer.setAttribute('data-note-time', noteTime);
+    // injectedNoteThreadRenderer.setAttribute('data-note-time', noteTime);
     // displayedNoteTime.setAttribute('data-note-time', noteTime); // put in injectedNoteThreadRenderer?
     // Add note text
     let content = injectedNoteThreadRenderer.querySelector("#content");
@@ -412,6 +414,7 @@ function newDisplayNote(noteTime, noteText) {
   noteThreadObserver.observe(injectedNoteThreadRenderer, {childList: true});
 
 }
+/*******SHOULD I BE PUTTING THE OBSERVERS BEFORE THE INJECTEDELEMENT RETRIEVALS?********/
 
 /*
  * Sets up the note's buttons.
