@@ -50,7 +50,7 @@ var editCommentDialogRenderer_raw = '<ytd-comment-dialog-renderer class="style-s
 
 var editNoteSaveBtn_raw = '<a is="yt-endpoint" tabindex="-1" class="style-scope ytd-button-renderer">' +
                           '<paper-button role="button" tabindex="-1" animated="" aria-disabled="true" elevation="0" id="button" class="style-scope ytd-button-renderer" style="pointer-events: none;" disabled="">' +
-                          '<yt-formatted-string id="text" class="style-scope ytd-button-renderer">Save</yt-formatted-string>' +
+                          '<span id="text" class="style-scope ytd-button-renderer">Save</span>' +
                           '<paper-ripple class="style-scope paper-button">' +
                           '<div id="background" class="style-scope paper-ripple" style="opacity: 0;"></div><div id="waves" class="style-scope paper-ripple"></div>' +
                           '</paper-ripple></paper-button></a>';
@@ -460,6 +460,7 @@ function setupSavedNoteButtons(note, observer) {
     let injectedEditDialogContents = editDialog.firstChild;
 
     var editDialogObserver = new MutationObserver(function(mutations, observer) {
+      let noteText = body.querySelector("#content-text").innerHTML;
       setupEditNoteButtons(body, editDialog, observer);
     });
     editDialogObserver.observe(injectedEditDialogContents, {childList: true});
@@ -502,7 +503,7 @@ function setupEditNoteButtons(body, editDialog, observer) {
   let cancelBtn = buttons.querySelector("#cancel-button");
   let submitBtn = buttons.querySelector("#submit-button");
   let cancelBtnContents = makeHTML(cancelBtnContents_raw);
-  let submitBtnContents = makeHTML(submitBtnContents_raw);
+  let submitBtnContents = makeHTML(editNoteSaveBtn_raw);
 
   cancelBtn.appendChild(cancelBtnContents);
   submitBtn.appendChild(submitBtnContents);
