@@ -20,7 +20,8 @@
           "*://*.youtube.com/*"
         ],
         "js": [
-          "/content_scripts/yt_ui.js"
+          "/content_scripts/yt_ui.js",
+          "/content_scripts/desktop_polymer.js"
         ],
         "css": [
           "/content_css/yt_ui.css"
