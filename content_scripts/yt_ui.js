@@ -161,10 +161,17 @@ function setupNoteCreate(create, observer) {
       attachments.setAttribute("hidden", "");
       commentDialog.removeAttribute("hidden");
       // Focus on text area.
+      let commentDialogRenderer = commentDialog.querySelector("ytd-comment-dialog-renderer");
+      commentDialogRenderer.focus();
+      let commentBox = commentDialog.querySelector("#commentbox");
+      console.log(commentBox);
+      commentBox.focus();
+      let textArea = commentDialog.querySelector("#textarea");
+      textArea.focus();
       // let creationBox = commentDialog.querySelector("#creation-box");
       // creationBox.classList.remove("not-focused");
       // creationBox.classList.add("focused");
-      // let textArea = commentDialog.querySelector("#textarea");
+
       // $(textArea).click();
       // textArea.setAttribute("focused", "");
     });
