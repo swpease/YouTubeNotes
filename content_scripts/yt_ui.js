@@ -6,8 +6,6 @@ var notesSection;
 var savedNotesWrapper;  // should de-globalize
 
 // Raw HTML. Taken and modded from YouTube.
-// main wrapper
-var notesSection_raw = '<ytd-comments id="notes-wrapper" class="style-scope ytd-watch"></ytd-comments>';
 
 // BEGIN HEADER STUFF
 // Contains the components that let you create new notes.
@@ -96,20 +94,22 @@ function makeHTML(input){
  * notesSection (outermost) Element.
  */
 function setupNoteInputSection() {
-  notesSection = makeHTML(notesSection_raw);
+  notesSection = document.createElement("ytd-comments");
+  notesSection.setAttribute("id", "notes");
+  notesSection.classList.add("style-scope", "ytd-watch");
 
   // YT makes stuff here.
   var detailsSection = document.querySelector("#meta");
   detailsSection.parentElement.insertBefore(notesSection, detailsSection.nextSibling);
-  var injectedNotesSection = document.querySelector("#notes-wrapper");
-
+  // var injectedNotesSection = document.querySelector("#notes-wrapper");
+  //
   var notesObserver = new MutationObserver(function(mutations, observer) {
     let mutation = mutations[0];
     let ytdItemSectionRenderer = mutation.addedNodes[1];
     let header = ytdItemSectionRenderer.childNodes[1];
     setupNoteHeader(header, observer);
   });
-  notesObserver.observe(injectedNotesSection, {childList: true});
+  notesObserver.observe(notesSection, {childList: true});
 }
 
 function setupNoteHeader(header, observer) {
@@ -139,66 +139,44 @@ function setupNoteHeader(header, observer) {
 function setupNoteCreate(create, observer) {
   observer.disconnect();
 
-  let noteSimpleboxRenderer = makeHTML(noteSimpleboxRenderer_raw);
+  let noteSimpleboxRenderer = document.createElement("ytd-comment-simplebox-renderer");
   create.appendChild(noteSimpleboxRenderer);
-  let injectedNoteSimpleboxRenderer = create.querySelector("ytd-comment-simplebox-renderer");
 
   var creatorObserver = new MutationObserver(function(mutations, observer) {
-    let mutation = mutations[0];
-    // format the default view (#placeholder-area)
     let defaultText = create.querySelector("yt-formatted-string");
     defaultText.innerHTML = "Add a private note...";
 
-    let placeholderArea = create.querySelector("#placeholder-area");
     let commentDialog = create.querySelector("#comment-dialog");
-
-    /* get to actual note input
-     *
-     */
-    placeholderArea.addEventListener('click', function() {
-      placeholderArea.setAttribute("hidden", "");
-      let attachments = create.querySelector("#attachments");
-      attachments.setAttribute("hidden", "");
-      commentDialog.removeAttribute("hidden");
-      // Focus on text area.
-      // let creationBox = commentDialog.querySelector("#creation-box");
-      // creationBox.classList.remove("not-focused");
-      // creationBox.classList.add("focused");
-      // let textArea = commentDialog.querySelector("#textarea");
-      // $(textArea).click();
-      // textArea.setAttribute("focused", "");
-    });
 
     setupNoteCreateDialog(commentDialog, observer);
   });
-  creatorObserver.observe(injectedNoteSimpleboxRenderer, {childList: true});
+  creatorObserver.observe(noteSimpleboxRenderer, {childList: true});
 }
 
 // The UI that pops up when you click to Add a private note...
 function setupNoteCreateDialog(commentDialog, observer) {
   observer.disconnect();
 
-  let commentDialogRenderer = makeHTML(commentDialogRenderer_raw);
+  let commentDialogRenderer = document.createElement("ytd-comment-dialog-renderer");
   commentDialog.appendChild(commentDialogRenderer);
-  let injectedCommentDialogRenderer = commentDialog.querySelector("ytd-comment-dialog-renderer");
 
-  var commentDialogObserver = new MutationObserver(function(mutations, observer) {
-    let mutation = mutations[0];
-    let defaultText = commentDialog.querySelector("#placeholder"); //TODO add aria-label to iron-autogrow-textarea
-    defaultText.innerHTML = "Add a private note...";
-
-    let avatar = commentDialog.querySelector("#author-thumbnail");
-    avatar.remove();
-
-    let btnWrapper = commentDialog.querySelector("#buttons");
-    // Move to next fn if possible
-    let btns = btnWrapper.querySelectorAll("ytd-button-renderer");
-    for (let btn of btns) {
-      btn.setAttribute("is-paper-button", "");
-    }
-    setupCreateNoteButtons(btnWrapper, observer);
-  });
-  commentDialogObserver.observe(injectedCommentDialogRenderer, {childList: true});
+  // var commentDialogObserver = new MutationObserver(function(mutations, observer) {
+  //   let mutation = mutations[0];
+  //   let defaultText = commentDialog.querySelector("#placeholder"); //TODO add aria-label to iron-autogrow-textarea
+  //   defaultText.innerHTML = "Add a private note...";
+  //
+  //   let avatar = commentDialog.querySelector("#author-thumbnail");
+  //   avatar.remove();
+  //
+  //   let btnWrapper = commentDialog.querySelector("#buttons");
+  //   // Move to next fn if possible
+  //   let btns = btnWrapper.querySelectorAll("ytd-button-renderer");
+  //   for (let btn of btns) {
+  //     btn.setAttribute("is-paper-button", "");
+  //   }
+  //   setupCreateNoteButtons(btnWrapper, observer);
+  // });
+  // commentDialogObserver.observe(commentDialogRenderer, {childList: true});
 }
 
 function setupCreateNoteButtons(btnWrapper, observer) {
