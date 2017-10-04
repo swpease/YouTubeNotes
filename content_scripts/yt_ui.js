@@ -419,6 +419,11 @@ function newDisplayNote(noteTime, noteText) {
     // Expander expanded by default:
     let expander = injectedNoteThreadRenderer.querySelector("#body #expander");
     expander.removeAttribute("collapsed");
+    // Misc layout details:
+    let randomDot = injectedNoteThreadRenderer.querySelector("#body #main #header #moderation-reason-divider");
+    randomDot.remove();
+    let invisibleImg = injectedNoteThreadRenderer.querySelector("#body #author-thumbnail a.yt-simple-endpoint");
+    invisibleImg.setAttribute("style", "cursor: default;");
     // Setup btns:
     setupSavedNoteButtons(injectedNoteThreadRenderer, observer);
   });
