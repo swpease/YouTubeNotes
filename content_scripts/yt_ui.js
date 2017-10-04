@@ -25,7 +25,7 @@ var cancelBtnContents_raw = '<a is="yt-endpoint" tabindex="-1" class="style-scop
                             '</paper-ripple></paper-button></a>';
 // Btn for commentDialogRenderer
 var submitBtnContents_raw = '<a is="yt-endpoint" tabindex="-1" class="style-scope ytd-button-renderer">' +
-                            '<paper-button role="button" tabindex="-1" animated="" aria-disabled="true" elevation="0" id="button" class="style-scope ytd-button-renderer style-primary" aria-label="Note" style="pointer-events: none;" disabled="">' +
+                            '<paper-button role="button" tabindex="-1" animated="" aria-disabled="true" elevation="0" id="button" class="style-scope ytd-button-renderer style-primary" aria-label="Note" disabled="">' +
                             '<span id="text" class="style-scope ytd-button-renderer style-primary">Note</span>' +
                             '</paper-button></a>';
 // END HEADER STUFF
@@ -163,12 +163,6 @@ function setupNoteCreate(create, observer) {
       // Focus on text area.
       let textArea = commentDialog.querySelector("#labelAndInputContainer textarea#textarea");
       textArea.focus();
-      // let creationBox = commentDialog.querySelector("#creation-box");
-      // creationBox.classList.remove("not-focused");
-      // creationBox.classList.add("focused");
-
-      // $(textArea).click();
-      // textArea.setAttribute("focused", "");
     });
 
     setupNoteCreateDialog(commentDialog, observer);
@@ -215,17 +209,22 @@ function setupCreateNoteButtons(btnWrapper, observer) {
   submitBtn.classList.add("style-primary");
   submitBtn.setAttribute("disabled", "");
   submitBtn.appendChild(submitBtnContents);
-  // Need to fix cursor:
-  // let submitBtnObserver = new MutationObserver(function (mutations) {
-  //   if (!submitBtn.hasAttribute("disabled")) {
-  //     let paperBtn = submitBtn.querySelector("#button");
-  //     paperBtn.removeAttribute("aria-disabled");
-  //     paperBtn.removeAttribute("disabled");
-  //     paperBtn.removeAttribute("style");
-  //     paperBtn.setAttribute("tabindex", 0);
-  //   }
-  // })
-  // submitBtnObserver.observe(submitBtn, {attributes: true});
+  // Fix "Note" button attrs.
+  let submitBtnObserver = new MutationObserver(function () {
+    let paperBtn = submitBtn.querySelector("#button");
+    if (!submitBtn.hasAttribute("disabled")) {
+      paperBtn.removeAttribute("aria-disabled");
+      paperBtn.removeAttribute("disabled");
+      paperBtn.setAttribute("style", "cursor: pointer;");
+      paperBtn.setAttribute("tabindex", 0);
+    }
+    if (submitBtn.hasAttribute("disabled")) {
+      paperBtn.setAttribute("aria-disabled", "");
+      paperBtn.setAttribute("disabled", "");
+      paperBtn.setAttribute("tabindex", -1);
+    }
+  });
+  submitBtnObserver.observe(submitBtn, {attributes: true});
 
   cancelBtn.addEventListener('click', revertToDefaultView);
   submitBtn.addEventListener('click', makeNote);
