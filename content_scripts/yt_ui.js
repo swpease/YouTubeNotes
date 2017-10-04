@@ -416,14 +416,21 @@ function newDisplayNote(noteTime, noteText) {
     let noteTextElement = makeHTML(noteTextElement_raw);
     noteTextElement.innerHTML = noteText;
     content.replaceChild(noteTextElement, oldNoteTextElement);
-    // Expander expanded by default:
+
+    // Misc layout details:
     let expander = injectedNoteThreadRenderer.querySelector("#body #expander");
     expander.removeAttribute("collapsed");
-    // Misc layout details:
     let randomDot = injectedNoteThreadRenderer.querySelector("#body #main #header #moderation-reason-divider");
     randomDot.remove();
     let invisibleImg = injectedNoteThreadRenderer.querySelector("#body #author-thumbnail a.yt-simple-endpoint");
     invisibleImg.setAttribute("style", "cursor: default;");
+
+    // Note time fnality:
+    displayedNoteTime.addEventListener('click', function () {
+      var ytVideo = document.querySelector('.html5-main-video');
+      ytVideo.currentTime = noteTime;
+    });
+
     // Setup btns:
     setupSavedNoteButtons(injectedNoteThreadRenderer, observer);
   });
