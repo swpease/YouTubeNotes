@@ -161,12 +161,7 @@ function setupNoteCreate(create, observer) {
       attachments.setAttribute("hidden", "");
       commentDialog.removeAttribute("hidden");
       // Focus on text area.
-      let commentDialogRenderer = commentDialog.querySelector("ytd-comment-dialog-renderer");
-      commentDialogRenderer.focus();
-      let commentBox = commentDialog.querySelector("#commentbox");
-      console.log(commentBox);
-      commentBox.focus();
-      let textArea = commentDialog.querySelector("#textarea");
+      let textArea = commentDialog.querySelector("#labelAndInputContainer textarea#textarea");
       textArea.focus();
       // let creationBox = commentDialog.querySelector("#creation-box");
       // creationBox.classList.remove("not-focused");
@@ -468,6 +463,9 @@ function setupSavedNoteButtons(note, observer) {
 
     var editDialogObserver = new MutationObserver(function(mutations, observer) {
       let noteText = body.querySelector("#content-text").innerHTML;
+      let editableTextArea = editDialog.querySelector("#labelAndInputContainer textarea#textarea");
+      editableTextArea.textContent = noteText;
+      editableTextArea.focus();
       setupEditNoteButtons(body, editDialog, observer);
     });
     editDialogObserver.observe(injectedEditDialogContents, {childList: true});
