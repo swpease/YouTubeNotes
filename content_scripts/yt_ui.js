@@ -410,14 +410,15 @@ function newDisplayNote(noteTime, noteText) {
     // Add note time
     let displayedNoteTime = injectedNoteThreadRenderer.querySelector("#author-text span");
     displayedNoteTime.innerHTML = prettifyTime(noteTime);
-    // injectedNoteThreadRenderer.setAttribute('data-note-time', noteTime);
-    // displayedNoteTime.setAttribute('data-note-time', noteTime); // put in injectedNoteThreadRenderer?
     // Add note text
     let content = injectedNoteThreadRenderer.querySelector("#content");
     let oldNoteTextElement = content.querySelector("#content-text");
     let noteTextElement = makeHTML(noteTextElement_raw);
     noteTextElement.innerHTML = noteText;
     content.replaceChild(noteTextElement, oldNoteTextElement);
+    // Expander expanded by default:
+    let expander = injectedNoteThreadRenderer.querySelector("#body #expander");
+    expander.removeAttribute("collapsed");
     // Setup btns:
     setupSavedNoteButtons(injectedNoteThreadRenderer, observer);
   });
@@ -523,7 +524,7 @@ function setupEditNoteButtons(body, editDialog, observer) {
 
   submitBtn.addEventListener('click', function () {
     var textMirror = editDialog.querySelector("#mirror");
-    var editedText = textMirror.innerHTML.substring(0, textMirror.innerHTML.length - 6); // Removes trailing %nbsp;
+    var editedText = textMirror.innerHTML; // Removes trailing %nbsp;
 
     var noteRenderer = editDialog.closest("ytd-comment-thread-renderer");
     var noteTime = noteRenderer.dataset.noteTime;
