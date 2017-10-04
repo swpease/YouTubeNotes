@@ -519,7 +519,33 @@ function setupEditNoteButtons(body, editDialog, observer) {
     editDialog.setAttribute("hidden", "");
     body.removeAttribute("hidden");
     editDialog.firstChild.remove();
-  })
+  });
+
+  submitBtn.addEventListener('click', function () {
+    var textMirror = editDialog.querySelector("#mirror");
+    var editedText = textMirror.innerHTML.substring(0, textMirror.innerHTML.length - 6); // Removes trailing %nbsp;
+
+    var noteRenderer = editDialog.closest("ytd-comment-thread-renderer");
+    var noteTime = noteRenderer.dataset.noteTime;
+
+    var gettingItem = browser.storage.local.get(videoId);
+    gettingItem.then((result) => {
+      if (Array.isArray(result)) {  // If Firefox version less than 52.
+        result = result[0];
+      }
+
+      var currentNotes = result[videoId]["notes"];  // Object
+      currentNotes[[noteTime]] = editedText;
+      var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
+      storingNote.then(() => {
+        body.querySelector("span#content-text").innerHTML = editedText;
+
+        editDialog.setAttribute("hidden", "");
+        body.removeAttribute("hidden");
+        editDialog.firstChild.remove();
+      });
+    });
+  });
 }
 
 
