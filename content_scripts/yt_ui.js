@@ -99,11 +99,13 @@ function setupNoteInputSection() {
   notesSection = makeHTML(notesSection_raw);
 
   // YT makes stuff here.
-  var detailsSection = document.querySelector("#meta");
+  var detailsSection = document.querySelector("ytd-page-manager ytd-watch #main #meta");
   detailsSection.parentElement.insertBefore(notesSection, detailsSection.nextSibling);
   var injectedNotesSection = document.querySelector("#notes-wrapper");
 
   var notesObserver = new MutationObserver(function(mutations, observer) {
+    setupExistingNotes();
+
     let mutation = mutations[0];
     let ytdItemSectionRenderer = mutation.addedNodes[1];
     let header = ytdItemSectionRenderer.childNodes[1];
@@ -481,6 +483,10 @@ function setupSavedNoteButtons(note, observer) {
       editableTextArea.innerHTML = formattedNoteText;
       editableTextArea.focus();
       editableTextArea.setSelectionRange(formattedNoteText.length, formattedNoteText.length);
+      // let e = new KeyboardEvent('keydown', {'key': ' ', 'bubbles': true});
+      // editableTextArea.dispatchEvent(e);
+      // console.log(e);
+
       setupEditNoteButtons(body, editDialog, observer);
     });
     editDialogObserver.observe(injectedEditDialogContents, {childList: true});
@@ -676,11 +682,12 @@ function setupExistingNotes() {
     var savedNotes = result[videoId]["notes"];
     for (var noteTime of Object.keys(savedNotes)) {
       var noteText = savedNotes[noteTime];
-      displayNote(noteTime, noteText);
+      newDisplayNote(noteTime, noteText);
     }
   });
 }
 
+// TODO could use ytd-watch video-id maybe?
 /* Gets YT video ID.
  * @return {null or string}: The video's ID, if it exists, else null.
  */
@@ -713,24 +720,19 @@ function main() {
   videoId = getVideoId();
   videoTitle = getVideoTitle();
   var injectedContent = document.getElementById('notes-wrapper');
-  console.log("id: ", videoId);
-  console.log("title: ", videoTitle);
-  console.log("injected: ", injectedContent);
-  if (videoId != null && videoTitle != null && injectedContent == null) {
-    //setup UI
-    setupNoteInputSection();
-    // savedNotesWrapper = makeHTML(savedNotesWrapper_raw); // could pass to insertByTime or query in insertByTime;
-    // notesSection.appendChild(savedNotesWrapper);
-    // inject UI onto page
-    // var detailsSection = document.querySelector("#meta");
-    // detailsSection.parentElement.insertBefore(notesSection, detailsSection.nextSibling);
-    // console.log("finished");
-    // setup existing notes.
-    // setupExistingNotes();
+  if (videoId != null && videoTitle != null) {
+    if (!injectedContent) {
+      setupNoteInputSection();
+    } else {
+      let priorVideoNotes = injectedContent.querySelectorAll("ytd-comment-thread-renderer");
+      for (let note of priorVideoNotes) {
+        note.remove();
+      }
+      setupExistingNotes();
+    }
   }
 }
 
-// Need MutationObserver b/c YouTube doesn't reload upon moving to new pages when already on YT.
 var pageTitle = document.querySelector("title");
 var pageObserver = new MutationObserver(main);
 pageObserver.observe(pageTitle, { childList: true });
