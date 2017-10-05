@@ -475,11 +475,12 @@ function setupSavedNoteButtons(note, observer) {
 
     var editDialogObserver = new MutationObserver(function(mutations, observer) {
       let noteText = body.querySelector("#content-text").innerHTML;
-      // replace <br> w/ ascii returns/enters:
+      // replace <br> w/ ascii returns:
       let formattedNoteText = noteText.replace(/<br>/g, '&#013;');
       let editableTextArea = editDialog.querySelector("#labelAndInputContainer textarea#textarea");
       editableTextArea.innerHTML = formattedNoteText;
       editableTextArea.focus();
+      editableTextArea.setSelectionRange(formattedNoteText.length, formattedNoteText.length);
       setupEditNoteButtons(body, editDialog, observer);
     });
     editDialogObserver.observe(injectedEditDialogContents, {childList: true});
