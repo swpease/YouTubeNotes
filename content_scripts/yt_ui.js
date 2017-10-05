@@ -475,14 +475,16 @@ function setupSavedNoteButtons(note, observer) {
 
     var editDialogObserver = new MutationObserver(function(mutations, observer) {
       let noteText = body.querySelector("#content-text").innerHTML;
+      // replace <br> w/ ascii returns/enters:
+      let formattedNoteText = noteText.replace(/<br>/g, '&#013;');
       let editableTextArea = editDialog.querySelector("#labelAndInputContainer textarea#textarea");
-      editableTextArea.textContent = noteText;
+      editableTextArea.innerHTML = formattedNoteText;
       editableTextArea.focus();
       setupEditNoteButtons(body, editDialog, observer);
     });
     editDialogObserver.observe(injectedEditDialogContents, {childList: true});
 
-  })
+  });
 
   // Delete Note
   deleteBtn.addEventListener('click', function () {
@@ -710,6 +712,9 @@ function main() {
   videoId = getVideoId();
   videoTitle = getVideoTitle();
   var injectedContent = document.getElementById('notes-wrapper');
+  console.log("id: ", videoId);
+  console.log("title: ", videoTitle);
+  console.log("injected: ", injectedContent);
   if (videoId != null && videoTitle != null && injectedContent == null) {
     //setup UI
     setupNoteInputSection();
@@ -725,8 +730,8 @@ function main() {
 }
 
 // Need MutationObserver b/c YouTube doesn't reload upon moving to new pages when already on YT.
-// var page = document.getElementById("page");
-// var pageObserver = new MutationObserver(main);
-// pageObserver.observe(page, { attributes: true });
+var pageTitle = document.querySelector("title");
+var pageObserver = new MutationObserver(main);
+pageObserver.observe(pageTitle, { childList: true });
 
 main();
