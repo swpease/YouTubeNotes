@@ -456,6 +456,7 @@ function setupEditNoteButtons(body, editDialog, observer) {
 
   cancelBtn.setAttribute("is-paper-button", "");
   submitBtn.setAttribute("is-paper-button", "");
+  changeBtnAttrs(submitBtn);
 
   cancelBtn.addEventListener('click', function () {
     editDialog.setAttribute("hidden", "");
@@ -465,7 +466,7 @@ function setupEditNoteButtons(body, editDialog, observer) {
 
   submitBtn.addEventListener('click', function () {
     var textMirror = editDialog.querySelector("#mirror");
-    var editedText = textMirror.innerHTML; // Removes trailing %nbsp;
+    var editedText = textMirror.innerHTML.substring(0, textMirror.innerHTML.length - 6); // Removes trailing %nbsp;
 
     var noteRenderer = editDialog.closest("ytd-comment-thread-renderer");
     var noteTime = noteRenderer.dataset.noteTime;
@@ -488,6 +489,12 @@ function setupEditNoteButtons(body, editDialog, observer) {
       });
     });
   });
+
+  let submitEditBtnObserver = new MutationObserver(function () {
+    changeBtnAttrs(submitBtn);
+  });
+  submitEditBtnObserver.observe(submitBtn, {attributes: true});
+
 }
 
 // Initialization stuff:
