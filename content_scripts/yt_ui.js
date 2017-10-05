@@ -27,11 +27,10 @@ var submitBtnContents_raw = '<a is="yt-endpoint" tabindex="-1" class="style-scop
                             '</paper-button></a>';
 // END HEADER STUFF
 
-
 // Displays a single saved note.
 var noteThreadRenderer_raw = '<ytd-comment-thread-renderer class="style-scope ytd-item-section-renderer"></ytd-comment-thread-renderer>';
 // To replace the yt-formatted-string.
-var noteTextElement_raw = '<span id="content-text" split-lines="" tabindex="0" class="style-scope ytd-comment-renderer"></span>';
+var noteTextElement_raw = '<span id="content-text" split-lines="" tabindex="-1" class="style-scope ytd-comment-renderer"></span>';
 //
 var editNoteBtnContents_raw = '<a is="yt-endpoint" tabindex="-1" class="style-scope ytd-button-renderer">' +
                               '<paper-button role="button" tabindex="0" animated="" aria-disabled="false" elevation="0" id="button" class="style-scope ytd-button-renderer style-text">' +
@@ -186,18 +185,7 @@ function setupCreateNoteButtons(btnWrapper, observer) {
   submitBtn.appendChild(submitBtnContents);
   // Fix "Note" button attrs.
   let submitBtnObserver = new MutationObserver(function () {
-    let paperBtn = submitBtn.querySelector("#button");
-    if (!submitBtn.hasAttribute("disabled")) {
-      paperBtn.removeAttribute("aria-disabled");
-      paperBtn.removeAttribute("disabled");
-      paperBtn.setAttribute("style", "cursor: pointer;");
-      paperBtn.setAttribute("tabindex", 0);
-    }
-    if (submitBtn.hasAttribute("disabled")) {
-      paperBtn.setAttribute("aria-disabled", "");
-      paperBtn.setAttribute("disabled", "");
-      paperBtn.setAttribute("tabindex", -1);
-    }
+    changeBtnAttrs(submitBtn);
   });
   submitBtnObserver.observe(submitBtn, {attributes: true});
 
@@ -216,6 +204,21 @@ function revertToDefaultView() {
   commentDialog.setAttribute("hidden", "");
   placeholderArea.removeAttribute("hidden");
   attachments.removeAttribute("hidden");
+}
+
+function changeBtnAttrs(btnWrapper) {
+  let paperBtn = btnWrapper.querySelector("#button");
+  if (!btnWrapper.hasAttribute("disabled")) {
+    paperBtn.removeAttribute("aria-disabled");
+    paperBtn.removeAttribute("disabled");
+    paperBtn.setAttribute("style", "cursor: pointer;");
+    paperBtn.setAttribute("tabindex", 0);
+  }
+  if (btnWrapper.hasAttribute("disabled")) {
+    paperBtn.setAttribute("aria-disabled", "");
+    paperBtn.setAttribute("disabled", "");
+    paperBtn.setAttribute("tabindex", -1);
+  }
 }
 
 function makeNote() {
