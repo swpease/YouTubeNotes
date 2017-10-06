@@ -61,16 +61,11 @@ function makeHTML(input){
   return dummy.firstChild;
 }
 
-/* The equivalent in YouTube's comments section is the part where you enter in
- * your comment to post, at the top of the comments section.
- * This fn makes the Elements, extracts any additional Elements needed for
- * event handling, puts everything together, and inserts it into the global
- * notesSection (outermost) Element.
+/* Begin the chain of creation!
  */
 function setupNoteInputSection() {
   let notesSection = makeHTML(notesSection_raw);
 
-  // YT makes stuff here.
   var detailsSection = document.querySelector("ytd-page-manager ytd-watch #main #meta");
   detailsSection.parentElement.insertBefore(notesSection, detailsSection.nextSibling);
   var injectedNotesSection = document.querySelector("#notes-wrapper");
@@ -95,13 +90,11 @@ function setupNoteHeader(header, observer) {
 
   var headerObserver = new MutationObserver(function(mutations, observer) {
     let mutation = mutations[0];
-    // console.log(mutation.addedNodes);
     for (let node of mutation.addedNodes) {
       if (node.id == "title") {
         let headerName = node.querySelector(".count-text");
         headerName.innerHTML = "Notes";
       } else if (node.id == "create") {
-        // console.log(node);
         setupNoteCreate(node, observer);
       }
     }
@@ -118,7 +111,6 @@ function setupNoteCreate(create, observer) {
   let injectedNoteSimpleboxRenderer = create.querySelector("ytd-comment-simplebox-renderer");
 
   var creatorObserver = new MutationObserver(function(mutations, observer) {
-    let mutation = mutations[0];
     // format the default view (#placeholder-area)
     let defaultText = create.querySelector("yt-formatted-string");
     defaultText.innerHTML = "Add a private note...";
@@ -126,15 +118,13 @@ function setupNoteCreate(create, observer) {
     let placeholderArea = create.querySelector("#placeholder-area");
     let commentDialog = create.querySelector("#comment-dialog");
 
-    /* get to actual note input
-     *
-     */
+    // Gets you to the actual note input view.
     placeholderArea.addEventListener('click', function() {
       placeholderArea.setAttribute("hidden", "");
       let attachments = create.querySelector("#attachments");
       attachments.setAttribute("hidden", "");
       commentDialog.removeAttribute("hidden");
-      // Focus on text area.
+
       let textArea = commentDialog.querySelector("#labelAndInputContainer textarea#textarea");
       textArea.focus();
     });
@@ -153,8 +143,7 @@ function setupNoteCreateDialog(commentDialog, observer) {
   let injectedCommentDialogRenderer = commentDialog.querySelector("ytd-comment-dialog-renderer");
 
   var commentDialogObserver = new MutationObserver(function(mutations, observer) {
-    let mutation = mutations[0];
-    let defaultText = commentDialog.querySelector("#placeholder"); //TODO add aria-label to iron-autogrow-textarea
+    let defaultText = commentDialog.querySelector("#placeholder");
     defaultText.innerHTML = "Add a private note...";
 
     let avatar = commentDialog.querySelector("#author-thumbnail");
@@ -206,6 +195,8 @@ function revertToDefaultView() {
   attachments.removeAttribute("hidden");
 }
 
+/* Handles "submit" / "Save" button attributes upon btn enabling / disabling
+ */
 function changeBtnAttrs(btnWrapper) {
   let paperBtn = btnWrapper.querySelector("#button");
   if (!btnWrapper.hasAttribute("disabled")) {
@@ -259,8 +250,6 @@ function makeNote() {
     }
   });
 }
-
-// Dispalying saved notes:
 
 /* Converts a time in seconds to a time in YouTube format: ((h)h):(mm):ss (ish).
  * @param {string} time: A float representing the video time in seconds.
@@ -403,9 +392,6 @@ function setupSavedNoteButtons(note, observer) {
       editableTextArea.innerHTML = formattedNoteText;
       editableTextArea.focus();
       editableTextArea.setSelectionRange(formattedNoteText.length, formattedNoteText.length);
-      // let e = new KeyboardEvent('keydown', {'key': ' ', 'bubbles': true});
-      // editableTextArea.dispatchEvent(e);
-      // console.log(e);
 
       setupEditNoteButtons(body, editDialog, observer);
     });
