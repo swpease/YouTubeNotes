@@ -1,6 +1,6 @@
 //Global.
-var videoId;
-var videoTitle;
+var VIDEO_ID;
+var VIDEO_TITLE;
 
 // Raw HTML. Taken and modded from YouTube.
 // main wrapper
@@ -220,15 +220,15 @@ function makeNote() {
   var noteTime = ytVideo.currentTime; //Don't format until after storage. Could still accidentally overwrite, but highly unlikely.
   var noteText = textMirror.innerHTML.substring(0, textMirror.innerHTML.length - 6); // Removes trailing %nbsp;
 
-  var gettingItem = browser.storage.local.get(videoId);
+  var gettingItem = browser.storage.local.get(VIDEO_ID);
   gettingItem.then((result) => {
     if (Array.isArray(result)) {  // If Firefox version less than 52.
       result = result[0];
     }
     var objTest = Object.keys(result);
 
-    if(!objTest.includes(videoId)) {
-      var storingNote = browser.storage.local.set({ [videoId] : { "title" : videoTitle,
+    if(!objTest.includes(VIDEO_ID)) {
+      let storingNote = browser.storage.local.set({ [VIDEO_ID] : { "title" : VIDEO_TITLE,
                                                                   "notes" : { [noteTime] : noteText }
                                                                 }
                                                   });
@@ -239,9 +239,9 @@ function makeNote() {
         cancelBtn.click();
       });
     } else {
-      var currentNotes = result[videoId]["notes"];  // Object
+      var currentNotes = result[VIDEO_ID]["notes"];  // Object
       currentNotes[[noteTime]] = noteText;
-      var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
+      let storingNote = browser.storage.local.set({ [VIDEO_ID] : result[VIDEO_ID] });
       storingNote.then(() => {
         newDisplayNote(noteTime, noteText);
         let cancelBtn = notesSection.querySelector("ytd-button-renderer#cancel-button");
@@ -401,19 +401,19 @@ function setupSavedNoteButtons(note, observer) {
 
   // Delete Note
   deleteBtn.addEventListener('click', function () {
-    var gettingItem = browser.storage.local.get(videoId);
+    var gettingItem = browser.storage.local.get(VIDEO_ID);
     gettingItem.then((result) => {
       if (Array.isArray(result)) {  // If Firefox version less than 52.
         result = result[0];
       }
 
-      var currentNotes = result[videoId]["notes"];  // Object
+      var currentNotes = result[VIDEO_ID]["notes"];  // Object
       delete currentNotes[[noteTime]];
       if (Object.keys(currentNotes).length == 0) {
-        browser.storage.local.remove(videoId);
+        browser.storage.local.remove(VIDEO_ID);
         note.remove();
       } else {
-        var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
+        var storingNote = browser.storage.local.set({ [VIDEO_ID] : result[VIDEO_ID] });
         storingNote.then(() => {
           note.remove();
         });
@@ -457,15 +457,15 @@ function setupEditNoteButtons(body, editDialog, observer) {
     var noteRenderer = editDialog.closest("ytd-comment-thread-renderer");
     var noteTime = noteRenderer.dataset.noteTime;
 
-    var gettingItem = browser.storage.local.get(videoId);
+    var gettingItem = browser.storage.local.get(VIDEO_ID);
     gettingItem.then((result) => {
       if (Array.isArray(result)) {  // If Firefox version less than 52.
         result = result[0];
       }
 
-      var currentNotes = result[videoId]["notes"];  // Object
+      var currentNotes = result[VIDEO_ID]["notes"];  // Object
       currentNotes[[noteTime]] = editedText;
-      var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
+      var storingNote = browser.storage.local.set({ [VIDEO_ID] : result[VIDEO_ID] });
       storingNote.then(() => {
         body.querySelector("span#content-text").innerHTML = editedText;
 
@@ -486,7 +486,7 @@ function setupEditNoteButtons(body, editDialog, observer) {
 // Initialization stuff:
 
 function setupExistingNotes() {
-  var gettingSavedNotes = browser.storage.local.get(videoId);
+  var gettingSavedNotes = browser.storage.local.get(VIDEO_ID);
   gettingSavedNotes.then((result) => {
     if (Array.isArray(result)) {  // If Firefox version less than 52.
       result = result[0];
@@ -496,7 +496,7 @@ function setupExistingNotes() {
       return;
     }
 
-    var savedNotes = result[videoId]["notes"];
+    var savedNotes = result[VIDEO_ID]["notes"];
     for (var noteTime of Object.keys(savedNotes)) {
       var noteText = savedNotes[noteTime];
       newDisplayNote(noteTime, noteText);
@@ -534,10 +534,10 @@ function getVideoTitle() {
 }
 
 function main() {
-  videoId = getVideoId();
-  videoTitle = getVideoTitle();
+  VIDEO_ID = getVideoId();
+  VIDEO_TITLE = getVideoTitle();
   var injectedContent = document.getElementById('notes-wrapper');
-  if (videoId != null && videoTitle != null) {
+  if (VIDEO_ID != null && VIDEO_TITLE != null) {
     if (!injectedContent) {
       setupNoteInputSection();
     } else {
