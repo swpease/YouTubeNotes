@@ -1,32 +1,3 @@
 #notes-wrapper #comment #like-button:not(:hover) {
   color: inherit;
 }
-
-.notes-footer-item {
-  color: #555;
-  opacity: 0.5;
-  text-decoration: none;
-  border: none;
-}
-
-.note-footer-spacer {
-  margin: 0 5px;
-  cursor: default;
-  text-decoration: none;
-  border: none;
-}
-
-.comment-renderer:hover .note-footer-btn {
-  opacity: 0.8;
-}
-
-.comment-renderer:hover .note-footer-btn:hover {
-  opacity: 1.0;
-  text-decoration: none;
-  border: none;
-}
-
-.comment-renderer:hover .note-footer-spacer:hover {
-  text-decoration: none;
-  border: none;
-}
