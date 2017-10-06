@@ -1,43 +1,55 @@
 //Global.
-var videoId;
-var videoTitle;
-//Needed in noteInput and savedNotes sections.
-var notesSection;
-var savedNotesWrapper;  // should de-globalize
+var VIDEO_ID;
+var VIDEO_TITLE;
 
 // Raw HTML. Taken and modded from YouTube.
 // main wrapper
-var notesSection_raw = '<div id="notes-wrapper" class="yt-card yt-card-has-padding"></div>';
-var notesSectionHeader_raw = '<h2 class="comment-section-header-renderer" tabindex="0"><b>Notes</b></h2>';
+var notesSection_raw = '<ytd-comments id="notes-wrapper" class="style-scope ytd-watch"></ytd-comments>';
 
-// Sections for making a new note:
-var noteInputWrapper_raw = '<div id="notes-input-wrapper" class="comment-simplebox-renderer"></div>';
-// The default "make a new note" section.
-var noteInputDefault_raw = '<div class="comment-simplebox-renderer-collapsed comment-simplebox-trigger" tabindex="0" role="form" aria-haspopup="true"><div class="comment-simplebox-renderer-collapsed-content">Add a private note...</div><div class="comment-simplebox-arrow"><div class="arrow-inner"></div><div class="arrow-outer"></div></div></div>';
+// BEGIN HEADER STUFF
+// Contains the components that let you create new notes.
+var noteHeaderRenderer_raw = '<ytd-comments-header-renderer class="style-scope ytd-item-section-renderer"></ytd-comments-header-renderer>';
+// Same as above, except for title.
+var noteSimpleboxRenderer_raw = '<ytd-comment-simplebox-renderer id="notes-input-wrapper" class="style-scope ytd-comments-header-renderer"></ytd-comment-simplebox-renderer>';
 // The element displayed when you click to make a new note.
-var noteInput_raw = '<div id="note-simplebox-create-note" class="comment-simplebox-content"><div class="comment-simplebox" id="note-simplebox"><div class="comment-simplebox-arrow"><div class="arrow-inner"></div><div class="arrow-outer"></div></div>' +
-                    '<div class="comment-simplebox-frame"><div class="comment-simplebox-prompt"></div><div class="comment-simplebox-text" role="textbox" aria-multiline="true" contenteditable="true" data-placeholder="Add a private note..."></div></div>' +
-                    '<div class="comment-simplebox-controls"><div class="comment-simplebox-buttons">' +
-                    '<button class="cancel-note-button yt-uix-button yt-uix-button-size-default yt-uix-button-default comment-simplebox-cancel" type="button" onclick=";return false;"><span class="yt-uix-button-content">Cancel</span>' +
-                    '</button><button class="confirm-note-button yt-uix-button yt-uix-button-size-default yt-uix-button-primary yt-uix-button-empty" type="button" onclick=";return false;" aria-label="Make Note" disabled="">Make Note</button></div></div></div></div>';
+var commentDialogRenderer_raw = '<ytd-comment-dialog-renderer class="style-scope ytd-comment-simplebox-renderer"></ytd-comment-dialog-renderer>';
+// Btn for commentDialogRenderer
+var cancelBtnContents_raw = '<a is="yt-endpoint" tabindex="-1" class="style-scope ytd-button-renderer">' +
+                            '<paper-button role="button" tabindex="0" animated="" aria-disabled="false" elevation="0" id="button" class="style-scope ytd-button-renderer">' +
+                            '<span id="text" class="style-scope ytd-button-renderer">Cancel</span>' +
+                            '<paper-ripple class="style-scope paper-button">' +
+                            '<div id="background" class="style-scope paper-ripple" style="opacity: 0;"></div><div id="waves" class="style-scope paper-ripple"></div>' +
+                            '</paper-ripple></paper-button></a>';
+// Btn for commentDialogRenderer
+var submitBtnContents_raw = '<a is="yt-endpoint" tabindex="-1" class="style-scope ytd-button-renderer">' +
+                            '<paper-button role="button" tabindex="-1" animated="" aria-disabled="true" elevation="0" id="button" class="style-scope ytd-button-renderer style-primary" aria-label="Note" disabled="">' +
+                            '<span id="text" class="style-scope ytd-button-renderer style-primary">Note</span>' +
+                            '</paper-button></a>';
+// END HEADER STUFF
 
-// Equivalent of the part below the horizontal bar:
-// contains all the notes
-var savedNotesWrapper_raw = '<div class="comment-section-renderer-items" id="saved-notes-section-renderer-items"></div>';
-// wrapper for noteRenderer (To switch with noteEdit)
-var noteRendererWrapper_raw = '<section class="note-renderer comment-thread-renderer"></section>'
-// contains a single note. Also includes footer.
-var noteRenderer_raw = '<div class="comment-renderer"><div class="comment-renderer-content"><div class="note-renderer-footer comment-renderer-footer"><div class="comment-action-buttons-toolbar"><button type="button" class="note-footer-edit-button note-footer-btn notes-footer-item yt-uix-button yt-uix-button-link">Edit</button><button type="button" class="notes-footer-item note-footer-spacer yt-uix-button yt-uix-button-link">•</button><button type="button" class="note-footer-delete-button note-footer-btn notes-footer-item yt-uix-button yt-uix-button-link">Delete</button></div></div></div></div>';
-var noteHeader_raw = '<div class="comment-renderer-header"><span class="comment-author-text note-video-time" style="cursor:pointer;">Time goes here</span></div>';
-var noteContent_raw = '<div class="comment-renderer-text" tabindex="0" role="article"><div class="comment-renderer-text-content expanded note-text-content">Note goes here</div></div>';
-// Just like the noteInput section.
-var noteEdit_raw = '<div class="comment-renderer comment-renderer-editing"><div class="comment-simplebox-edit comment-simplebox-content">' +
-                   '<div class="comment-simplebox focus"><div class="comment-simplebox-arrow"><div class="arrow-inner"></div><div class="arrow-outer"></div></div>' +
-                   '<div class="comment-simplebox-frame"><div class="comment-simplebox-prompt"></div><div class="note-simplebox-text comment-simplebox-text" role="textbox" aria-multiline="true" contenteditable="true"></div></div>' +
-                   '<div class="comment-simplebox-controls"><div class="comment-simplebox-buttons">' +
-                   '<button class="cancel-note-button yt-uix-button yt-uix-button-size-default yt-uix-button-default comment-simplebox-cancel" type="button" onclick=";return false;"><span class="yt-uix-button-content">Cancel</span>' +
-                   '</button><button class="confirm-note-button yt-uix-button yt-uix-button-size-default yt-uix-button-primary yt-uix-button-empty" type="button" onclick=";return false;" aria-label="Save" disabled="">Save</button></div></div></div></div></div>';
+// Displays a single saved note.
+var noteThreadRenderer_raw = '<ytd-comment-thread-renderer class="style-scope ytd-item-section-renderer"></ytd-comment-thread-renderer>';
+// To replace the yt-formatted-string.
+var noteTextElement_raw = '<span id="content-text" split-lines="" tabindex="-1" class="style-scope ytd-comment-renderer"></span>';
+//
+var editNoteBtnContents_raw = '<a is="yt-endpoint" tabindex="-1" class="style-scope ytd-button-renderer">' +
+                              '<paper-button role="button" tabindex="0" animated="" aria-disabled="false" elevation="0" id="button" class="style-scope ytd-button-renderer style-text">' +
+                              '<span id="text" class="style-scope ytd-button-renderer style-text">Edit</span>' +
+                              '</paper-button></a>';
 
+var deleteNoteBtnContents_raw = '<a is="yt-endpoint" tabindex="-1" class="style-scope ytd-button-renderer">' +
+                                '<paper-button role="button" tabindex="0" animated="" aria-disabled="false" elevation="0" id="button" class="style-scope ytd-button-renderer style-text">' +
+                                '<span id="text" class="style-scope ytd-button-renderer style-text">Delete</span>' +
+                                '</paper-button></a>';
+// Inject at #edit-dialog when user clicks to edit a note.
+var editCommentDialogRenderer_raw = '<ytd-comment-dialog-renderer class="style-scope ytd-comment-renderer"></ytd-comment-dialog-renderer>';
+
+var editNoteSaveBtn_raw = '<a is="yt-endpoint" tabindex="-1" class="style-scope ytd-button-renderer">' +
+                          '<paper-button role="button" tabindex="-1" animated="" aria-disabled="true" elevation="0" id="button" class="style-scope ytd-button-renderer" style="pointer-events: none;" disabled="">' +
+                          '<span id="text" class="style-scope ytd-button-renderer">Save</span>' +
+                          '<paper-ripple class="style-scope paper-button">' +
+                          '<div id="background" class="style-scope paper-ripple" style="opacity: 0;"></div><div id="waves" class="style-scope paper-ripple"></div>' +
+                          '</paper-ripple></paper-button></a>';
 
 /* Takes a string and converts it to a HTML element.
  * @param {string} input: thing to convert to HTML element
@@ -49,102 +61,195 @@ function makeHTML(input){
   return dummy.firstChild;
 }
 
-/* The equivalent in YouTube's comments section is the part where you enter in
- * your comment to post, at the top of the comments section.
- * This fn makes the Elements, extracts any additional Elements needed for
- * event handling, puts everything together, and inserts it into the global
- * notesSection (outermost) Element.
+/* Begin the chain of creation!
  */
 function setupNoteInputSection() {
-  notesSection = makeHTML(notesSection_raw);
-  var notesSectionHeader = makeHTML(notesSectionHeader_raw);
-  var noteInputWrapper = makeHTML(noteInputWrapper_raw);
-  var noteInputDefault = makeHTML(noteInputDefault_raw);
-  var noteInput = makeHTML(noteInput_raw);
+  let notesSection = makeHTML(notesSection_raw);
 
-  var notesBox = noteInput.getElementsByClassName("comment-simplebox")[0];
-  var note = noteInput.getElementsByClassName("comment-simplebox-text")[0];
-  var cancelNoteBtn = noteInput.getElementsByClassName("cancel-note-button")[0];
-  var makeNoteBtn = noteInput.getElementsByClassName("confirm-note-button")[0];
+  var detailsSection = document.querySelector("ytd-page-manager ytd-watch #main #meta");
+  detailsSection.parentElement.insertBefore(notesSection, detailsSection.nextSibling);
+  var injectedNotesSection = document.querySelector("#notes-wrapper");
 
+  var notesObserver = new MutationObserver(function(mutations, observer) {
+    setupExistingNotes();
 
-  notesSection.appendChild(noteInputWrapper);
-  noteInputWrapper.appendChild(noteInputDefault);
-  notesSection.insertBefore(notesSectionHeader, noteInputWrapper);
-
-
-  noteInputDefault.addEventListener('click', function() { switchToNoteInput(notesBox, noteInputWrapper, note, noteInput, noteInputDefault) });
-  cancelNoteBtn.addEventListener('click', function() { switchToNoteInputDefault(notesBox, noteInputWrapper, note, noteInput, noteInputDefault) });
-  makeNoteBtn.addEventListener('click', function() { makeNote(notesBox, noteInputWrapper, note, noteInput, noteInputDefault) });
-  note.addEventListener('focus', function () { focusNote(notesBox) });
-  note.addEventListener('blur', function () { blurNote(notesBox) });
-  note.addEventListener('keyup', function () { toggleNoteButtonEnabled(note, makeNoteBtn) });
+    let mutation = mutations[0];
+    let ytdItemSectionRenderer = mutation.addedNodes[1];
+    let header = ytdItemSectionRenderer.childNodes[1];
+    setupNoteHeader(header, observer);
+  });
+  notesObserver.observe(injectedNotesSection, {childList: true});
 }
 
-// BEGIN Event functionality for making a new note. First three fn's also used in note editing.
-function blurNote(commentSimplebox) {
-  commentSimplebox.classList.remove("focus");
+function setupNoteHeader(header, observer) {
+  observer.disconnect();
+
+  let headerRenderer = makeHTML(noteHeaderRenderer_raw);
+  header.appendChild(headerRenderer);
+  var injectedHeaderRenderer = header.querySelector("ytd-comments-header-renderer");
+
+  var headerObserver = new MutationObserver(function(mutations, observer) {
+    let mutation = mutations[0];
+    for (let node of mutation.addedNodes) {
+      if (node.id == "title") {
+        let headerName = node.querySelector(".count-text");
+        headerName.innerHTML = "Notes";
+      } else if (node.id == "create") {
+        setupNoteCreate(node, observer);
+      }
+    }
+  });
+  headerObserver.observe(injectedHeaderRenderer, {childList: true});
 }
 
-function focusNote(commentSimplebox) {
-  commentSimplebox.classList.add("focus");
+// Contents of #create
+function setupNoteCreate(create, observer) {
+  observer.disconnect();
+
+  let noteSimpleboxRenderer = makeHTML(noteSimpleboxRenderer_raw);
+  create.appendChild(noteSimpleboxRenderer);
+  let injectedNoteSimpleboxRenderer = create.querySelector("ytd-comment-simplebox-renderer");
+
+  var creatorObserver = new MutationObserver(function(mutations, observer) {
+    // format the default view (#placeholder-area)
+    let defaultText = create.querySelector("yt-formatted-string");
+    defaultText.innerHTML = "Add a private note...";
+
+    let placeholderArea = create.querySelector("#placeholder-area");
+    let commentDialog = create.querySelector("#comment-dialog");
+
+    // Gets you to the actual note input view.
+    placeholderArea.addEventListener('click', function() {
+      placeholderArea.setAttribute("hidden", "");
+      let attachments = create.querySelector("#attachments");
+      attachments.setAttribute("hidden", "");
+      commentDialog.removeAttribute("hidden");
+
+      let textArea = commentDialog.querySelector("#labelAndInputContainer textarea#textarea");
+      textArea.focus();
+    });
+
+    setupNoteCreateDialog(commentDialog, observer);
+  });
+  creatorObserver.observe(injectedNoteSimpleboxRenderer, {childList: true});
 }
 
-function toggleNoteButtonEnabled(commentSimpleboxText, confirmNoteButton, initialText = "") {
-  commentSimpleboxText.innerHTML == initialText ? confirmNoteButton.disabled = true : confirmNoteButton.disabled = false;
+// The UI that pops up when you click to Add a private note...
+function setupNoteCreateDialog(commentDialog, observer) {
+  observer.disconnect();
+
+  let commentDialogRenderer = makeHTML(commentDialogRenderer_raw);
+  commentDialog.appendChild(commentDialogRenderer);
+  let injectedCommentDialogRenderer = commentDialog.querySelector("ytd-comment-dialog-renderer");
+
+  var commentDialogObserver = new MutationObserver(function(mutations, observer) {
+    let defaultText = commentDialog.querySelector("#placeholder");
+    defaultText.innerHTML = "Add a private note...";
+
+    let avatar = commentDialog.querySelector("#author-thumbnail");
+    avatar.remove();
+
+    let btnWrapper = commentDialog.querySelector("#buttons");
+    // Move to next fn if possible
+    let btns = btnWrapper.querySelectorAll("ytd-button-renderer");
+    for (let btn of btns) {
+      btn.setAttribute("is-paper-button", "");
+    }
+    setupCreateNoteButtons(btnWrapper, observer);
+  });
+  commentDialogObserver.observe(injectedCommentDialogRenderer, {childList: true});
 }
 
-function switchToNoteInput(notesBox, noteInputWrapper, note, noteInput, noteInputDefault) {
-  notesBox.classList.add("focus");
-  noteInputWrapper.replaceChild(noteInput, noteInputDefault);
-  note.focus();
+function setupCreateNoteButtons(btnWrapper, observer) {
+  observer.disconnect();
+
+  let cancelBtnContents = makeHTML(cancelBtnContents_raw);
+  let cancelBtn = btnWrapper.querySelector('#cancel-button');
+  cancelBtn.appendChild(cancelBtnContents);
+
+  let submitBtnContents = makeHTML(submitBtnContents_raw);
+  let submitBtn = btnWrapper.querySelector('#submit-button');
+  submitBtn.classList.add("style-primary");
+  submitBtn.setAttribute("disabled", "");
+  submitBtn.appendChild(submitBtnContents);
+  // Fix "Note" button attrs.
+  let submitBtnObserver = new MutationObserver(function () {
+    changeBtnAttrs(submitBtn);
+  });
+  submitBtnObserver.observe(submitBtn, {attributes: true});
+
+  cancelBtn.addEventListener('click', revertToDefaultView);
+  submitBtn.addEventListener('click', makeNote);
 }
 
-function switchToNoteInputDefault(notesBox, noteInputWrapper, note, noteInput, noteInputDefault) {
-  note.textContent = "";
-  notesBox.classList.remove("focus");
-  noteInputWrapper.replaceChild(noteInputDefault, noteInput);
-}
-
-/* Upon clicking to add a note, displays the note and adds it to local storage.
- * @param {Element} note: Contains the note to save.
- * @param {Element} the other four: just here to be passed to subsequent fn's.
+/* Changes the view from the editable note creation section to just
+ * the default view that you click on to switch to the editable version.
  */
-function makeNote(notesBox, noteInputWrapper, note, noteInput, noteInputDefault) {
+function revertToDefaultView() {
+  let notesSection = document.querySelector("#notes-wrapper");
+  let placeholderArea = notesSection.querySelector("#placeholder-area");
+  let attachments = notesSection.querySelector("#attachments");
+  let commentDialog = notesSection.querySelector("#comment-dialog");
+  commentDialog.setAttribute("hidden", "");
+  placeholderArea.removeAttribute("hidden");
+  attachments.removeAttribute("hidden");
+}
+
+/* Handles "submit" / "Save" button attributes upon btn enabling / disabling
+ */
+function changeBtnAttrs(btnWrapper) {
+  let paperBtn = btnWrapper.querySelector("#button");
+  if (!btnWrapper.hasAttribute("disabled")) {
+    paperBtn.removeAttribute("aria-disabled");
+    paperBtn.removeAttribute("disabled");
+    paperBtn.setAttribute("style", "cursor: pointer;");
+    paperBtn.setAttribute("tabindex", 0);
+  }
+  if (btnWrapper.hasAttribute("disabled")) {
+    paperBtn.setAttribute("aria-disabled", "");
+    paperBtn.setAttribute("disabled", "");
+    paperBtn.setAttribute("tabindex", -1);
+  }
+}
+
+function makeNote() {
+  let notesSection = document.querySelector("#notes-wrapper");
+  let textMirror = notesSection.querySelector("#mirror");
+
   var ytVideo = document.querySelector('.html5-main-video');
   var noteTime = ytVideo.currentTime; //Don't format until after storage. Could still accidentally overwrite, but highly unlikely.
-  var noteText = note.innerHTML;
+  var noteText = textMirror.innerHTML.substring(0, textMirror.innerHTML.length - 6); // Removes trailing %nbsp;
 
-  var gettingItem = browser.storage.local.get(videoId);
+  var gettingItem = browser.storage.local.get(VIDEO_ID);
   gettingItem.then((result) => {
     if (Array.isArray(result)) {  // If Firefox version less than 52.
       result = result[0];
     }
     var objTest = Object.keys(result);
 
-    if(!objTest.includes(videoId)) {
-      var storingNote = browser.storage.local.set({ [videoId] : { "title" : videoTitle,
+    if(!objTest.includes(VIDEO_ID)) {
+      let storingNote = browser.storage.local.set({ [VIDEO_ID] : { "title" : VIDEO_TITLE,
                                                                   "notes" : { [noteTime] : noteText }
                                                                 }
                                                   });
       storingNote.then(() => {
-        displayNote(noteTime, noteText);
-        switchToNoteInputDefault(notesBox, noteInputWrapper, note, noteInput, noteInputDefault);
+        newDisplayNote(noteTime, noteText);
+        // Not sure why this works but calling revertToDefaultView doesnt...
+        let cancelBtn = notesSection.querySelector("ytd-button-renderer#cancel-button");
+        cancelBtn.click();
       });
     } else {
-      var currentNotes = result[videoId]["notes"];  // Object
+      var currentNotes = result[VIDEO_ID]["notes"];  // Object
       currentNotes[[noteTime]] = noteText;
-      var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
+      let storingNote = browser.storage.local.set({ [VIDEO_ID] : result[VIDEO_ID] });
       storingNote.then(() => {
-        displayNote(noteTime, noteText);
-        switchToNoteInputDefault(notesBox, noteInputWrapper, note, noteInput, noteInputDefault);
+        newDisplayNote(noteTime, noteText);
+        let cancelBtn = notesSection.querySelector("ytd-button-renderer#cancel-button");
+        cancelBtn.click();
       });
     }
   });
 }
-
-
-// Dispalying saved notes:
 
 /* Converts a time in seconds to a time in YouTube format: ((h)h):(mm):ss (ish).
  * @param {string} time: A float representing the video time in seconds.
@@ -181,39 +286,21 @@ function prettifyTime(time) {
 }
 
 /* Called by displayNote so that you know they are displayed in order by time.
- * @param {Element} note: a noteRendererWrapper
+ * @param {Element} contents: #contents. Contains all of the saved notes.
+ * @param {Element} note: a noteThreadRenderer
  */
-function insertByTime(note) {
-  var displayedNotes = savedNotesWrapper.getElementsByClassName('note-renderer');
+function insertByTime(contents, note) {
+  var displayedNotes = contents.querySelectorAll("ytd-comment-thread-renderer");
 
   if (displayedNotes.length > 0) {
     for (var displayedNote of displayedNotes) {
       if (Number(note.dataset.noteTime) < Number(displayedNote.dataset.noteTime)) {
-        savedNotesWrapper.insertBefore(note, displayedNote);
+        contents.insertBefore(note, displayedNote);
         return;
       }
     }
   }
-  savedNotesWrapper.appendChild(note);
-}
-
-//source: http://stackoverflow.com/questions/4233265/contenteditable-set-caret-at-the-end-of-the-text-cross-browser
-function placeCaretAtEnd(el) {
-    el.focus();
-    if (typeof window.getSelection != "undefined"
-            && typeof document.createRange != "undefined") {
-        var range = document.createRange();
-        range.selectNodeContents(el);
-        range.collapse(false);
-        var sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-    } else if (typeof document.body.createTextRange != "undefined") {
-        var textRange = document.body.createTextRange();
-        textRange.moveToElementText(el);
-        textRange.collapse(false);
-        textRange.select();
-    }
+  contents.appendChild(note);
 }
 
 /* Ugh.
@@ -222,105 +309,184 @@ function placeCaretAtEnd(el) {
  * @param {string} noteTime: The video's time at the moment that "Save Note" was clicked.
  * @param {string} noteText: The note that the user wants to save.
  */
-function displayNote(noteTime, noteText) {
-  var noteRendererWrapper = makeHTML(noteRendererWrapper_raw);
-  var noteRenderer = makeHTML(noteRenderer_raw);
-  var noteHeader = makeHTML(noteHeader_raw);
-  var noteContent = makeHTML(noteContent_raw);
+function newDisplayNote(noteTime, noteText) {
+  let contents = document.querySelector("#notes-wrapper #contents");
 
-  var noteTimeElement = noteHeader.querySelector('.note-video-time');
-  var footerEditBtn = noteRenderer.querySelector('.note-footer-edit-button');
-  var footerDelBtn = noteRenderer.querySelector('.note-footer-delete-button');
-  var noteFooter = noteRenderer.getElementsByClassName('note-renderer-footer')[0];
+  let noteThreadRenderer = makeHTML(noteThreadRenderer_raw);
+  noteThreadRenderer.setAttribute('data-note-time', noteTime);
+  insertByTime(contents, noteThreadRenderer);
+  let injectedNoteThreadRenderer = contents.querySelector('ytd-comment-thread-renderer[data-note-time="' + noteTime + '"]');
 
+  let noteThreadObserver = new MutationObserver(function(mutations, observer) {
+    // Add note time
+    let displayedNoteTime = injectedNoteThreadRenderer.querySelector("#author-text span");
+    displayedNoteTime.innerHTML = prettifyTime(noteTime);
+    // Add note text
+    let content = injectedNoteThreadRenderer.querySelector("#content");
+    let oldNoteTextElement = content.querySelector("#content-text");
+    let noteTextElement = makeHTML(noteTextElement_raw);
+    noteTextElement.innerHTML = noteText;
+    content.replaceChild(noteTextElement, oldNoteTextElement);
 
-  noteContent.querySelector('.note-text-content').innerHTML = noteText;
-  noteTimeElement.textContent = prettifyTime(noteTime);
-  noteRendererWrapper.setAttribute('data-note-time', noteTime);
+    // Misc layout details:
+    let expander = injectedNoteThreadRenderer.querySelector("#body #expander");
+    expander.removeAttribute("collapsed");
+    let randomDot = injectedNoteThreadRenderer.querySelector("#body #main #header #moderation-reason-divider");
+    randomDot.remove();
+    let invisibleImg = injectedNoteThreadRenderer.querySelector("#body #author-thumbnail a.yt-simple-endpoint");
+    invisibleImg.setAttribute("style", "cursor: default;");
 
-  noteRendererWrapper.appendChild(noteRenderer);
-  noteFooter.parentElement.insertBefore(noteHeader, noteFooter);
-  noteFooter.parentElement.insertBefore(noteContent, noteFooter);
-
-  // Edit note.
-  footerEditBtn.addEventListener('click', function () {
-    var noteKeyTime = noteRendererWrapper.dataset.noteTime;  // For lookup by makeEditBtn click
-
-    var noteEdit = makeHTML(noteEdit_raw);
-    noteEdit.querySelector('.note-simplebox-text').innerHTML = noteContent.querySelector('.note-text-content').innerHTML;
-
-    var editBox = noteEdit.getElementsByClassName("comment-simplebox")[0];
-    var edit = noteEdit.getElementsByClassName("comment-simplebox-text")[0];
-    var cancelEditBtn = noteEdit.getElementsByClassName("cancel-note-button")[0];
-    var makeEditBtn = noteEdit.getElementsByClassName("confirm-note-button")[0];
-
-    edit.addEventListener('focus', function () { focusNote(editBox) });
-    edit.addEventListener('blur', function () { blurNote(editBox) });
-    edit.addEventListener('keyup', function () { toggleNoteButtonEnabled(edit, makeEditBtn, noteText) });
-
-    cancelEditBtn.addEventListener('click', function () {
-      noteEdit.parentElement.replaceChild(noteRenderer, noteEdit);
-      noteEdit.remove();
+    // Note time fnality:
+    displayedNoteTime.addEventListener('click', function () {
+      var ytVideo = document.querySelector('.html5-main-video');
+      ytVideo.currentTime = noteTime;
     });
 
-    makeEditBtn.addEventListener('click', function () {
-      var editedText = noteEdit.querySelector('.note-simplebox-text').innerHTML;
+    // Setup btns:
+    setupSavedNoteButtons(injectedNoteThreadRenderer, observer);
+  });
+  noteThreadObserver.observe(injectedNoteThreadRenderer, {childList: true});
 
-      var gettingItem = browser.storage.local.get(videoId);
-      gettingItem.then((result) => {
-        if (Array.isArray(result)) {  // If Firefox version less than 52.
-          result = result[0];
-        }
+}
+/*******SHOULD I BE PUTTING THE OBSERVERS BEFORE THE INJECTEDELEMENT RETRIEVALS?********/
 
-        var currentNotes = result[videoId]["notes"];  // Object
-        currentNotes[[noteKeyTime]] = editedText;
-        var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
-        storingNote.then(() => {
-          noteContent.querySelector('.note-text-content').innerHTML = editedText;
-          noteEdit.parentElement.replaceChild(noteRenderer, noteEdit);
-          noteEdit.remove();
-        });
-      });
-    })
+/*
+ * Sets up the note's buttons: [Edit] and [Delete]
+ * @param {Element} note: A single "note" unit: ytd-comment-thread-renderer
+ * @param {MutationObserver} observer: The observer that triggered this fn. To disconnect.
+ */
+function setupSavedNoteButtons(note, observer) {
+  observer.disconnect();
+  // Create btns
+  let editBtn = note.querySelector("#reply-button");
+  editBtn.setAttribute("is-paper-button", "");
+  let editNoteBtnContents = makeHTML(editNoteBtnContents_raw);
+  editBtn.appendChild(editNoteBtnContents);
 
-    // Display
-    noteRenderer.parentElement.replaceChild(noteEdit, noteRenderer);
-    placeCaretAtEnd(edit);
+  let btnContainer = note.querySelector("#toolbar");
+  let deleteBtn = btnContainer.querySelector("#like-button"); // To turn into a delete button.
+  let deleteNoteBtnContents = makeHTML(deleteNoteBtnContents_raw);
+  deleteBtn.appendChild(deleteNoteBtnContents);
+
+  let voteCount = btnContainer.querySelector("#vote-count");
+  voteCount.remove();
+
+  // Functionality
+  let noteTime = note.dataset.noteTime;
+
+  // Edit Note
+  editBtn.addEventListener('click', function () {
+    let body = note.querySelector("#body"); // The regular view.
+    let editDialog = note.querySelector("#edit-dialog");
+    let editDialogContents = makeHTML(editCommentDialogRenderer_raw);
+    editDialog.appendChild(editDialogContents);
+    body.setAttribute("hidden", "");
+    editDialog.removeAttribute("hidden");
+    let injectedEditDialogContents = editDialog.firstChild;
+
+    var editDialogObserver = new MutationObserver(function(mutations, observer) {
+      let noteText = body.querySelector("#content-text").innerHTML;
+      // replace <br> w/ ascii returns:
+      let formattedNoteText = noteText.replace(/<br>/g, '&#013;');
+      let editableTextArea = editDialog.querySelector("#labelAndInputContainer textarea#textarea");
+      editableTextArea.innerHTML = formattedNoteText;
+      editableTextArea.focus();
+      editableTextArea.setSelectionRange(formattedNoteText.length, formattedNoteText.length);
+
+      setupEditNoteButtons(body, editDialog, observer);
+    });
+    editDialogObserver.observe(injectedEditDialogContents, {childList: true});
+
   });
 
   // Delete Note
-  footerDelBtn.addEventListener('click', function () {
-    var gettingItem = browser.storage.local.get(videoId);
+  deleteBtn.addEventListener('click', function () {
+    var gettingItem = browser.storage.local.get(VIDEO_ID);
     gettingItem.then((result) => {
       if (Array.isArray(result)) {  // If Firefox version less than 52.
         result = result[0];
       }
 
-      var currentNotes = result[videoId]["notes"];  // Object
+      var currentNotes = result[VIDEO_ID]["notes"];  // Object
       delete currentNotes[[noteTime]];
       if (Object.keys(currentNotes).length == 0) {
-        browser.storage.local.remove(videoId);
-        noteRendererWrapper.remove();
+        browser.storage.local.remove(VIDEO_ID);
+        note.remove();
       } else {
-        var storingNote = browser.storage.local.set({ [videoId] : result[videoId] });
+        var storingNote = browser.storage.local.set({ [VIDEO_ID] : result[VIDEO_ID] });
         storingNote.then(() => {
-          noteRendererWrapper.remove();
+          note.remove();
         });
       }
     });
   });
 
-  // Seek to note's time.
-  noteTimeElement.addEventListener('click', function() { document.querySelector('.html5-main-video').currentTime = noteTime; });
-
-  insertByTime(noteRendererWrapper);
 }
 
+/* The [Cancel] and [Save] buttons that are below the edit widget for a note.
+ * @param {Element} body: Default view. To switch with editDialog upon btn click.
+ * @param {Element} editDialog: Edit view.
+ * @param {MutationObserver} observer: To disconnect.
+ */
+function setupEditNoteButtons(body, editDialog, observer) {
+  observer.disconnect();
+
+  let buttons = editDialog.querySelector("#footer #buttons");
+  let cancelBtn = buttons.querySelector("#cancel-button");
+  let submitBtn = buttons.querySelector("#submit-button");
+  let cancelBtnContents = makeHTML(cancelBtnContents_raw);
+  let submitBtnContents = makeHTML(editNoteSaveBtn_raw);
+
+  cancelBtn.appendChild(cancelBtnContents);
+  submitBtn.appendChild(submitBtnContents);
+
+  cancelBtn.setAttribute("is-paper-button", "");
+  submitBtn.setAttribute("is-paper-button", "");
+  changeBtnAttrs(submitBtn);
+
+  cancelBtn.addEventListener('click', function () {
+    editDialog.setAttribute("hidden", "");
+    body.removeAttribute("hidden");
+    editDialog.firstChild.remove();
+  });
+
+  submitBtn.addEventListener('click', function () {
+    var textMirror = editDialog.querySelector("#mirror");
+    var editedText = textMirror.innerHTML.substring(0, textMirror.innerHTML.length - 6); // Removes trailing %nbsp;
+
+    var noteRenderer = editDialog.closest("ytd-comment-thread-renderer");
+    var noteTime = noteRenderer.dataset.noteTime;
+
+    var gettingItem = browser.storage.local.get(VIDEO_ID);
+    gettingItem.then((result) => {
+      if (Array.isArray(result)) {  // If Firefox version less than 52.
+        result = result[0];
+      }
+
+      var currentNotes = result[VIDEO_ID]["notes"];  // Object
+      currentNotes[[noteTime]] = editedText;
+      var storingNote = browser.storage.local.set({ [VIDEO_ID] : result[VIDEO_ID] });
+      storingNote.then(() => {
+        body.querySelector("span#content-text").innerHTML = editedText;
+
+        editDialog.setAttribute("hidden", "");
+        body.removeAttribute("hidden");
+        editDialog.firstChild.remove();
+      });
+    });
+  });
+
+  let submitEditBtnObserver = new MutationObserver(function () {
+    changeBtnAttrs(submitBtn);
+  });
+  submitEditBtnObserver.observe(submitBtn, {attributes: true});
+
+}
 
 // Initialization stuff:
 
 function setupExistingNotes() {
-  var gettingSavedNotes = browser.storage.local.get(videoId);
+  var gettingSavedNotes = browser.storage.local.get(VIDEO_ID);
   gettingSavedNotes.then((result) => {
     if (Array.isArray(result)) {  // If Firefox version less than 52.
       result = result[0];
@@ -330,65 +496,62 @@ function setupExistingNotes() {
       return;
     }
 
-    var savedNotes = result[videoId]["notes"];
+    var savedNotes = result[VIDEO_ID]["notes"];
     for (var noteTime of Object.keys(savedNotes)) {
       var noteText = savedNotes[noteTime];
-      displayNote(noteTime, noteText);
+      newDisplayNote(noteTime, noteText);
     }
   });
 }
 
+// TODO could use ytd-watch video-id maybe?
 /* Gets YT video ID.
  * @return {null or string}: The video's ID, if it exists, else null.
  */
 function getVideoId() {
-  var page = document.getElementById('page');
+  var href = window.location.href;
+  var vidSplit = href.split("v=");
 
-  if (page == null) {
+  if (vidSplit.length == 1) {
     return null;
   }
 
-  for (let cl of page.classList) {
-    if (cl.startsWith('video-')) {
-      return cl.substring(6);
-    }
-  }
+  var vidHalf = vidSplit[1];
 
-  return null;
+  return vidHalf.split("&")[0];
 }
 
 /* Gets YT video title.
  * @return {null or string}: The video's title, if it exists, else null.
  */
 function getVideoTitle() {
-  var titleEl = document.getElementById('eow-title');
+  var titleEl = document.querySelector('#container > h1');
   if (titleEl != null) {
-    return titleEl.getAttribute('title');
+    return titleEl.innerHTML;
   } else {
     return null;
   }
 }
 
 function main() {
-  videoId = getVideoId();
-  videoTitle = getVideoTitle();
+  VIDEO_ID = getVideoId();
+  VIDEO_TITLE = getVideoTitle();
   var injectedContent = document.getElementById('notes-wrapper');
-  if (videoId != null && videoTitle != null && injectedContent == null) {
-    //setup UI
-    setupNoteInputSection();
-    savedNotesWrapper = makeHTML(savedNotesWrapper_raw); // could pass to insertByTime or query in insertByTime;
-    notesSection.appendChild(savedNotesWrapper);
-    // inject UI onto page
-    var detailsSection = document.getElementById('action-panel-details');
-    detailsSection.parentElement.insertBefore(notesSection, detailsSection.nextSibling);
-    // setup existing notes.
-    setupExistingNotes();
+  if (VIDEO_ID != null && VIDEO_TITLE != null) {
+    if (!injectedContent) {
+      setupNoteInputSection();
+    } else {
+      let priorVideoNotes = injectedContent.querySelectorAll("ytd-comment-thread-renderer");
+      for (let note of priorVideoNotes) {
+        note.remove();
+      }
+      setupExistingNotes();
+    }
   }
 }
 
-// Need MutationObserver b/c YouTube doesn't reload upon moving to new pages when already on YT.
-var page = document.getElementById("page");
+var pageTitle = document.querySelector("title");
 var pageObserver = new MutationObserver(main);
-pageObserver.observe(page, { attributes: true });
+pageObserver.observe(pageTitle, { childList: true });
 
 main();
