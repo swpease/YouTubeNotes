@@ -321,12 +321,21 @@ function newDisplayNote(noteTime, noteText) {
     // Add note time
     let displayedNoteTime = injectedNoteThreadRenderer.querySelector("#author-text span");
     displayedNoteTime.innerHTML = prettifyTime(noteTime);
+    displayedNoteTime.setAttribute("tabindex", "0");
+    displayedNoteTime.addEventListener('keyup', function (e) {
+      if (e.key == "Enter") {
+        displayedNoteTime.click();
+      }
+    });
     // Add note text
     let content = injectedNoteThreadRenderer.querySelector("#content");
     let oldNoteTextElement = content.querySelector("#content-text");
     let noteTextElement = makeHTML(noteTextElement_raw);
     noteTextElement.innerHTML = noteText;
     content.replaceChild(noteTextElement, oldNoteTextElement);
+    // Untab pointlessly tabbable element
+    let uselessTextElement = content.querySelector("#voted-option");
+    uselessTextElement.setAttribute("tabindex", "-1");
 
     // Misc layout details:
     let expander = injectedNoteThreadRenderer.querySelector("#body #expander");
