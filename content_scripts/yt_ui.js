@@ -61,16 +61,6 @@ function makeHTML(input){
   return dummy.firstChild;
 }
 
-/* Takes a .innerHTML string and formats it to be applied as .innerText.
- * @param {string} noteText: Taken from a .innerHTML for assignment to another element
- * @return {string}: The text, formatted with returns.
- */
-function sanitizeText(noteText) {
-  let formattedNoteText = noteText.replace(/<br>/g, '\n');
-  let elementedNoteText = makeHTML('<div>' + formattedNoteText + '</div>');
-  return elementedNoteText.innerText;
-}
-
 /* Begin the chain of creation!
  */
 function setupNoteInputSection() {
@@ -341,7 +331,9 @@ function newDisplayNote(noteTime, noteText) {
     let content = injectedNoteThreadRenderer.querySelector("#content");
     let oldNoteTextElement = content.querySelector("#content-text");
     let noteTextElement = makeHTML(noteTextElement_raw);
-    noteTextElement.innerText = sanitizeText(noteText);
+
+    let formattedNoteText = noteText.replace(/<br>/g, '\n');
+    noteTextElement.innerText = formattedNoteText;
     content.replaceChild(noteTextElement, oldNoteTextElement);
     // Untab pointlessly tabbable element
     let uselessTextElement = content.querySelector("#voted-option");
@@ -405,12 +397,11 @@ function setupSavedNoteButtons(note, observer) {
 
     var editDialogObserver = new MutationObserver(function(mutations, observer) {
       let noteText = body.querySelector("#content-text").innerHTML;
-      // replace <br> w/ ascii returns:
-      let formattedNoteText = noteText.replace(/<br>/g, '&#013;');
       let editableTextArea = editDialog.querySelector("#labelAndInputContainer textarea#textarea");
+      let formattedNoteText = noteText.replace(/<br>/g, '\n');
       editableTextArea.innerHTML = formattedNoteText;
       editableTextArea.focus();
-      editableTextArea.setSelectionRange(formattedNoteText.length, formattedNoteText.length);
+      editableTextArea.setSelectionRange(noteText.length, noteText.length);
 
       setupEditNoteButtons(body, editDialog, observer);
     });
@@ -486,7 +477,8 @@ function setupEditNoteButtons(body, editDialog, observer) {
       currentNotes[[noteTime]] = editedText;
       var storingNote = browser.storage.local.set({ [VIDEO_ID] : result[VIDEO_ID] });
       storingNote.then(() => {
-        body.querySelector("span#content-text").innerHTML = editedText;
+        let formattedEditedText = editedText.replace(/<br>/g, '\n');
+        body.querySelector("span#content-text").innerText = formattedEditedText;
 
         editDialog.setAttribute("hidden", "");
         body.removeAttribute("hidden");
