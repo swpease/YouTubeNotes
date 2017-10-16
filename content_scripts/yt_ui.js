@@ -93,7 +93,7 @@ function setupNoteHeader(header, observer) {
     for (let node of mutation.addedNodes) {
       if (node.id == "title") {
         let headerName = node.querySelector(".count-text");
-        headerName.innerHTML = "Notes";
+        headerName.textContent = "Notes";
       } else if (node.id == "create") {
         setupNoteCreate(node, observer);
       }
@@ -113,7 +113,7 @@ function setupNoteCreate(create, observer) {
   var creatorObserver = new MutationObserver(function(mutations, observer) {
     // format the default view (#placeholder-area)
     let defaultText = create.querySelector("yt-formatted-string");
-    defaultText.innerHTML = "Add a private note...";
+    defaultText.textContent = "Add a private note...";
 
     let placeholderArea = create.querySelector("#placeholder-area");
     let commentDialog = create.querySelector("#comment-dialog");
@@ -127,6 +127,13 @@ function setupNoteCreate(create, observer) {
 
       let textArea = commentDialog.querySelector("#labelAndInputContainer textarea#textarea");
       textArea.focus();
+    });
+    //Tabbability
+    placeholderArea.setAttribute("tabindex", "0");
+    placeholderArea.addEventListener('keyup', function (e) {
+      if (e.key == "Enter") {
+        placeholderArea.click();
+      }
     });
 
     setupNoteCreateDialog(commentDialog, observer);
@@ -144,7 +151,7 @@ function setupNoteCreateDialog(commentDialog, observer) {
 
   var commentDialogObserver = new MutationObserver(function(mutations, observer) {
     let defaultText = commentDialog.querySelector("#placeholder");
-    defaultText.innerHTML = "Add a private note...";
+    defaultText.textContent = "Add a private note...";
 
     let avatar = commentDialog.querySelector("#author-thumbnail");
     avatar.remove();
@@ -320,13 +327,24 @@ function newDisplayNote(noteTime, noteText) {
   let noteThreadObserver = new MutationObserver(function(mutations, observer) {
     // Add note time
     let displayedNoteTime = injectedNoteThreadRenderer.querySelector("#author-text span");
-    displayedNoteTime.innerHTML = prettifyTime(noteTime);
+    displayedNoteTime.textContent = prettifyTime(noteTime);
+    displayedNoteTime.setAttribute("tabindex", "0");
+    displayedNoteTime.addEventListener('keyup', function (e) {
+      if (e.key == "Enter") {
+        displayedNoteTime.click();
+      }
+    });
     // Add note text
     let content = injectedNoteThreadRenderer.querySelector("#content");
     let oldNoteTextElement = content.querySelector("#content-text");
     let noteTextElement = makeHTML(noteTextElement_raw);
-    noteTextElement.innerHTML = noteText;
+
+    let formattedNoteText = noteText.replace(/<br>/g, '\n');
+    noteTextElement.innerText = formattedNoteText;
     content.replaceChild(noteTextElement, oldNoteTextElement);
+    // Untab pointlessly tabbable element
+    let uselessTextElement = content.querySelector("#voted-option");
+    uselessTextElement.setAttribute("tabindex", "-1");
 
     // Misc layout details:
     let expander = injectedNoteThreadRenderer.querySelector("#body #expander");
@@ -386,12 +404,11 @@ function setupSavedNoteButtons(note, observer) {
 
     var editDialogObserver = new MutationObserver(function(mutations, observer) {
       let noteText = body.querySelector("#content-text").innerHTML;
-      // replace <br> w/ ascii returns:
-      let formattedNoteText = noteText.replace(/<br>/g, '&#013;');
       let editableTextArea = editDialog.querySelector("#labelAndInputContainer textarea#textarea");
+      let formattedNoteText = noteText.replace(/<br>/g, '\n');
       editableTextArea.innerHTML = formattedNoteText;
       editableTextArea.focus();
-      editableTextArea.setSelectionRange(formattedNoteText.length, formattedNoteText.length);
+      editableTextArea.setSelectionRange(noteText.length, noteText.length);
 
       setupEditNoteButtons(body, editDialog, observer);
     });
@@ -467,7 +484,8 @@ function setupEditNoteButtons(body, editDialog, observer) {
       currentNotes[[noteTime]] = editedText;
       var storingNote = browser.storage.local.set({ [VIDEO_ID] : result[VIDEO_ID] });
       storingNote.then(() => {
-        body.querySelector("span#content-text").innerHTML = editedText;
+        let formattedEditedText = editedText.replace(/<br>/g, '\n');
+        body.querySelector("span#content-text").innerText = formattedEditedText;
 
         editDialog.setAttribute("hidden", "");
         body.removeAttribute("hidden");
