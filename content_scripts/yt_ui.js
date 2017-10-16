@@ -61,6 +61,16 @@ function makeHTML(input){
   return dummy.firstChild;
 }
 
+/* Takes a .innerHTML string and formats it to be applied as .innerText.
+ * @param {string} noteText: Taken from a .innerHTML for assignment to another element
+ * @return {string}: The text, formatted with returns.
+ */
+function sanitizeText(noteText) {
+  let formattedNoteText = noteText.replace(/<br>/g, '\n');
+  let elementedNoteText = makeHTML('<div>' + formattedNoteText + '</div>');
+  return elementedNoteText.innerText;
+}
+
 /* Begin the chain of creation!
  */
 function setupNoteInputSection() {
@@ -93,7 +103,7 @@ function setupNoteHeader(header, observer) {
     for (let node of mutation.addedNodes) {
       if (node.id == "title") {
         let headerName = node.querySelector(".count-text");
-        headerName.innerHTML = "Notes";
+        headerName.textContent = "Notes";
       } else if (node.id == "create") {
         setupNoteCreate(node, observer);
       }
@@ -113,7 +123,7 @@ function setupNoteCreate(create, observer) {
   var creatorObserver = new MutationObserver(function(mutations, observer) {
     // format the default view (#placeholder-area)
     let defaultText = create.querySelector("yt-formatted-string");
-    defaultText.innerHTML = "Add a private note...";
+    defaultText.textContent = "Add a private note...";
 
     let placeholderArea = create.querySelector("#placeholder-area");
     let commentDialog = create.querySelector("#comment-dialog");
@@ -144,7 +154,7 @@ function setupNoteCreateDialog(commentDialog, observer) {
 
   var commentDialogObserver = new MutationObserver(function(mutations, observer) {
     let defaultText = commentDialog.querySelector("#placeholder");
-    defaultText.innerHTML = "Add a private note...";
+    defaultText.textContent = "Add a private note...";
 
     let avatar = commentDialog.querySelector("#author-thumbnail");
     avatar.remove();
@@ -320,7 +330,7 @@ function newDisplayNote(noteTime, noteText) {
   let noteThreadObserver = new MutationObserver(function(mutations, observer) {
     // Add note time
     let displayedNoteTime = injectedNoteThreadRenderer.querySelector("#author-text span");
-    displayedNoteTime.innerHTML = prettifyTime(noteTime);
+    displayedNoteTime.textContent = prettifyTime(noteTime);
     displayedNoteTime.setAttribute("tabindex", "0");
     displayedNoteTime.addEventListener('keyup', function (e) {
       if (e.key == "Enter") {
@@ -331,7 +341,7 @@ function newDisplayNote(noteTime, noteText) {
     let content = injectedNoteThreadRenderer.querySelector("#content");
     let oldNoteTextElement = content.querySelector("#content-text");
     let noteTextElement = makeHTML(noteTextElement_raw);
-    noteTextElement.innerHTML = noteText;
+    noteTextElement.innerText = sanitizeText(noteText);
     content.replaceChild(noteTextElement, oldNoteTextElement);
     // Untab pointlessly tabbable element
     let uselessTextElement = content.querySelector("#voted-option");
