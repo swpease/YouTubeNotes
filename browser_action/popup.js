@@ -23,9 +23,9 @@ function setupExistingNotes() {
       var titleEl = document.createElement('h2');
       titleEl.textContent = videoTitle;
       titleEl.addEventListener('click', function() {
-          browser.tabs.update({url: baseUrl});
-          window.close();
-      })
+        browser.tabs.update({url: baseUrl});
+        window.close();
+      });
       videoNotes.appendChild(titleEl);
 
       var savedNotes = result[videoId]["notes"];
@@ -35,11 +35,12 @@ function setupExistingNotes() {
 
         var note = document.createElement('div');
         note.setAttribute('class', 'note');
-        note.innerHTML = noteText;
+        let formattedNoteText = noteText.replace(/<br>/g, '\n');
+        note.innerText = formattedNoteText;
         note.addEventListener('click', function() {
           browser.tabs.update({url: noteUrl});
           window.close();
-        })
+        });
         videoNotes.appendChild(note);
       }
     }
@@ -51,7 +52,7 @@ setupExistingNotes();
 
 var searchElWrapper = document.querySelector('.search');
 var searchEl = document.querySelector('input');
-var searchText = ""
+var searchText = "";
 searchEl.addEventListener('keyup', function() {
   var newText = searchEl.value.toLocaleLowerCase();
 
@@ -84,11 +85,11 @@ searchEl.addEventListener('keyup', function() {
       videoNotes.style.display = 'block';
     }
   }
-})
+});
 
 searchEl.addEventListener('focus', function() {
   searchElWrapper.classList.add('search-focused');
-})
+});
 searchEl.addEventListener('blur', function() {
   searchElWrapper.classList.remove('search-focused');
-})
+});
