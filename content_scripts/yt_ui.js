@@ -128,6 +128,13 @@ function setupNoteCreate(create, observer) {
       let textArea = commentDialog.querySelector("#labelAndInputContainer textarea#textarea");
       textArea.focus();
     });
+    //Tabbability
+    placeholderArea.setAttribute("tabindex", "0");
+    placeholderArea.addEventListener('keyup', function (e) {
+      if (e.key == "Enter") {
+        placeholderArea.click();
+      }
+    });
 
     setupNoteCreateDialog(commentDialog, observer);
   });
